@@ -39,4 +39,6 @@ dependencies {
 
     //DataBinding compiler
     kapt "com.android.databinding:compiler:$gradle_plugin_version"
+
+    implementation 'com.squareup.picasso:picasso:2.71828'
 }
