@@ -26,4 +26,14 @@ open class LocationEntity : RealmObject() {
 
     @JsonIgnore
     var isFavourite: Boolean = false
+
+    fun getDisaplyDate(): String {
+        return dateString.trim().split(" ").let { chunks ->
+            if (chunks.size == 2) {
+                return@let "${chunks[1]} ${chunks[0]}, 2019"
+            } else {
+                return@let dateString
+            }
+        }
+    }
 }

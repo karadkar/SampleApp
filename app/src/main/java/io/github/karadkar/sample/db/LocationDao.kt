@@ -49,7 +49,7 @@ class LocationDao(private val realm: Realm = Realm.getDefaultInstance()) : Close
                 return@map entities.mapTo(mutableListOf(), { entity ->
                     LocationListItem(
                         title = entity.place,
-                        date = entity.dateString,
+                        date = entity.getDisaplyDate(),
                         image = entity.imageUrl,
                         isFavourite = entity.isFavourite
                     )
@@ -71,7 +71,7 @@ class LocationDao(private val realm: Realm = Realm.getDefaultInstance()) : Close
     }
 
     fun getLocationImage(placeName: String) = realm.getLocation(placeName)?.imageUrl ?: ""
-    fun getLocationDate(placeName: String) = realm.getLocation(placeName)?.dateString ?: ""
+    fun getLocationDate(placeName: String) = realm.getLocation(placeName)?.getDisaplyDate() ?: ""
     fun getLocationDescription(placeName: String) = realm.getLocation(placeName)?.description ?: ""
 
     override fun close() {
