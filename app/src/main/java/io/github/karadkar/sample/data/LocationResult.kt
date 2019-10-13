@@ -1,4 +1,4 @@
-package io.github.karadkar.sample.db
+package io.github.karadkar.sample.data
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import io.realm.RealmList

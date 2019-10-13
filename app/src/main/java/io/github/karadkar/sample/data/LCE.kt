@@ -1,4 +1,4 @@
-package io.github.karadkar.sample.db
+package io.github.karadkar.sample.data
 
 sealed class LCE<T> {
     data class Loading<T>(var loading: Boolean) : LCE<T>()

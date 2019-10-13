@@ -1,4 +1,4 @@
-package io.github.karadkar.sample
+package io.github.karadkar.sample.detail
 
 import android.content.Context
 import android.content.Intent
@@ -7,9 +7,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProviders
 import com.squareup.picasso.Picasso
+import io.github.karadkar.sample.R
 import io.github.karadkar.sample.databinding.DetailActivityBinding
 
-class DetailActivity : AppCompatActivity() {
+class LocationDetailActivity : AppCompatActivity() {
 
     lateinit var binding: DetailActivityBinding
     lateinit var placeName: String
@@ -31,10 +32,15 @@ class DetailActivity : AppCompatActivity() {
         binding.tvDescription.text = viewModel.getLocationDescription(placeName)
     }
 
+    override fun onSupportNavigateUp(): Boolean {
+        onBackPressed()
+        return super.onSupportNavigateUp()
+    }
+
     companion object {
         private val KEY_PLACE_NAME = "key.place.name"
         fun getIntent(context: Context, placeName: String): Intent {
-            return Intent(context, DetailActivity::class.java).also {
+            return Intent(context, LocationDetailActivity::class.java).also {
                 it.putExtra(KEY_PLACE_NAME, placeName)
             }
         }

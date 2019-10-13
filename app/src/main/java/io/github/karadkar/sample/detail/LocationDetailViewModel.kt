@@ -1,7 +1,7 @@
-package io.github.karadkar.sample
+package io.github.karadkar.sample.detail
 
 import androidx.lifecycle.ViewModel
-import io.github.karadkar.sample.db.LocationDao
+import io.github.karadkar.sample.data.LocationDao
 import io.reactivex.disposables.CompositeDisposable
 
 class LocationDetailViewModel(

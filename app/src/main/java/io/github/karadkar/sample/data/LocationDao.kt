@@ -1,4 +1,4 @@
-package io.github.karadkar.sample.db
+package io.github.karadkar.sample.data
 
 import io.github.karadkar.sample.main.LocationListItem
 import io.reactivex.Completable

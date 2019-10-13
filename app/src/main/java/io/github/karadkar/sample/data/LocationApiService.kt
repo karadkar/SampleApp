@@ -1,4 +1,4 @@
-package io.github.karadkar.sample.db
+package io.github.karadkar.sample.data
 
 import io.reactivex.Single
 import retrofit2.http.GET

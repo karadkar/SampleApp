@@ -5,16 +5,16 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.LiveDataReactiveStreams
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import io.github.karadkar.sample.db.ApiHelper
-import io.github.karadkar.sample.db.LCE
-import io.github.karadkar.sample.db.LocationApiService
-import io.github.karadkar.sample.db.LocationDao
+import io.github.karadkar.sample.data.ApiHelper
+import io.github.karadkar.sample.data.LCE
+import io.github.karadkar.sample.data.LocationApiService
+import io.github.karadkar.sample.data.LocationDao
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 
-class MainViewModel(
+class LocationListViewModel(
     private val apiService: LocationApiService = ApiHelper.getLocationApiService(),
     private val disposible: CompositeDisposable = CompositeDisposable(),
     private val dao: LocationDao = LocationDao()
