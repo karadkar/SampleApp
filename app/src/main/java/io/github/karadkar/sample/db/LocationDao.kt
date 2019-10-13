@@ -56,6 +56,16 @@ class LocationDao(private val realm: Realm = Realm.getDefaultInstance()) : Close
             .findFirst()?.customerName ?: "User"
     }
 
+    fun toggleFavourite(place: String): Completable {
+        return realm.completableTransaction {
+            it.where(LocationEntity::class.java)
+                .equalTo(LocationEntityFields.PLACE, place)
+                .findFirst()?.let { item ->
+                    item.isFavourite = !item.isFavourite
+                }
+        }
+    }
+
     override fun close() {
         realm.close()
     }

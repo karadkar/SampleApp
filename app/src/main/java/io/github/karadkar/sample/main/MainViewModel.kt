@@ -23,10 +23,6 @@ class MainViewModel(
     // fixme: only expose liveData
     val apiResultLiveData = MutableLiveData<LCE<Boolean>>()
 
-    init {
-        fetchLocations()
-    }
-
     fun fetchLocations() {
         val sub = apiService.getLocations()
             .subscribeOn(Schedulers.io())
@@ -44,10 +40,23 @@ class MainViewModel(
     }
 
     fun getLocations(): LiveData<List<LocationListItem>> {
-        return LiveDataReactiveStreams.fromPublisher(dao.getLocations())
+        val sub = dao.getLocations().map { items ->
+            if (items.isEmpty()) {
+                fetchLocations()
+            }
+            return@map items
+        }
+        return LiveDataReactiveStreams.fromPublisher(sub)
     }
 
     fun getCustomerName(): String = dao.getCustomerName()
+
+    fun markAsFavourite(place: String) {
+        val sub = dao.toggleFavourite(place).subscribe({}, {
+            Log.e("MainVM", "error toggling as favourite", it)
+        })
+        disposible.add(sub)
+    }
 
     override fun onCleared() {
         disposible.dispose()

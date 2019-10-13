@@ -13,7 +13,11 @@ import com.squareup.picasso.Picasso
 import io.github.karadkar.sample.R
 import io.github.karadkar.sample.databinding.LocationListItemBinding
 
-class LocationListAdapter(val context: Context, val onClickItem: (item: LocationListItem) -> Unit) :
+class LocationListAdapter(
+    val context: Context,
+    val onClickItem: (item: LocationListItem) -> Unit,
+    val onClickFavourite: (item: LocationListItem) -> Unit
+) :
     ListAdapter<LocationListItem, LocationListAdapter.VH>(
         LocationListDiff()
     ) {
@@ -44,6 +48,7 @@ class LocationListAdapter(val context: Context, val onClickItem: (item: Location
         View.OnClickListener {
         init {
             binding.root.setOnClickListener(this)
+            binding.btnFavourite.setOnClickListener(this)
         }
 
         fun bind(item: LocationListItem) {
@@ -62,7 +67,11 @@ class LocationListAdapter(val context: Context, val onClickItem: (item: Location
 
         override fun onClick(view: View?) {
             if (adapterPosition in 0 until itemCount) {
-                onClickItem(getItem(adapterPosition))
+                if (view?.id == R.id.btn_favourite) {
+                    onClickFavourite(getItem(adapterPosition))
+                } else {
+                    onClickItem(getItem(adapterPosition))
+                }
             }
         }
     }
