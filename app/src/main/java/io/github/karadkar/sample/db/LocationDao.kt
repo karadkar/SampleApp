@@ -53,7 +53,7 @@ class LocationDao(private val realm: Realm = Realm.getDefaultInstance()) : Close
 
     fun getCustomerName(): String {
         return realm.where(LocationResult::class.java)
-            .findFirst()?.customerName ?: "not-found"
+            .findFirst()?.customerName ?: "User"
     }
 
     override fun close() {

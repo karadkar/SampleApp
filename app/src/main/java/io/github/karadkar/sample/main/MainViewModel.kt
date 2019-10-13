@@ -20,12 +20,12 @@ class MainViewModel(
     private val dao: LocationDao = LocationDao()
 ) : ViewModel() {
 
+    // fixme: only expose liveData
+    val apiResultLiveData = MutableLiveData<LCE<Boolean>>()
+
     init {
         fetchLocations()
     }
-
-    // fixme: only expose liveData
-    val apiResultLiveData = MutableLiveData<LCE<Boolean>>()
 
     fun fetchLocations() {
         val sub = apiService.getLocations()

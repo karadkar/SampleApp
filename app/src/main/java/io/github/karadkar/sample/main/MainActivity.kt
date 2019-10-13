@@ -2,6 +2,8 @@ package io.github.karadkar.sample.main
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
@@ -9,13 +11,17 @@ import androidx.lifecycle.ViewModelProviders
 import io.github.karadkar.sample.DetailActivity
 import io.github.karadkar.sample.R
 import io.github.karadkar.sample.databinding.ActivityMainBinding
+import io.github.karadkar.sample.db.LCE
 
 class MainActivity : AppCompatActivity() {
 
     lateinit var binding: ActivityMainBinding
+    val viewModel by lazy {
+        ViewModelProviders.of(this)[MainViewModel::class.java]
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val viewModel = ViewModelProviders.of(this)[MainViewModel::class.java]
+
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         val adapter = LocationListAdapter(this) { clickedListItem ->
@@ -28,20 +34,30 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
+        viewModel.apiResultLiveData.observe(this, Observer { result ->
+            when (result) {
+                is LCE.Error -> {
+                    Toast.makeText(this, "Opps something went wrong", Toast.LENGTH_SHORT).show()
+                }
+                is LCE.Content -> {
+                    setupName()
+                }
+            }
+
+            binding.swipeRefreshLayout.isRefreshing = result.isLoading()
+            binding.container.visibleOrGone(!result.isLoading())
+        })
+
+        binding.swipeRefreshLayout.setOnRefreshListener {
+            viewModel.fetchLocations()
+        }
     }
 
-    fun dummyListItems(): MutableList<LocationListItem> {
-        val list = mutableListOf<LocationListItem>()
-        for (i in 0..10) {
-            list.add(
-                LocationListItem(
-                    title = "Location name $i",
-                    date = "June 19 - 20, 2019",
-                    isFavourite = i % 2 == 0,
-                    image = "https://picsum.photos/300"
-                )
-            )
-        }
-        return list
+    private fun setupName() {
+        binding.tvUserName.text = String.format(getString(R.string.format_custome_name), viewModel.getCustomerName())
+    }
+
+    private fun View.visibleOrGone(visible: Boolean) {
+        this.visibility = if (visible) View.VISIBLE else View.GONE
     }
 }
