@@ -1,4 +1,4 @@
-package io.github.karadkar.sample
+package io.github.karadkar.sample.main
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -10,10 +10,13 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
+import io.github.karadkar.sample.R
 import io.github.karadkar.sample.databinding.LocationListItemBinding
 
 class LocationListAdapter(val context: Context, val onClickItem: (item: LocationListItem) -> Unit) :
-    ListAdapter<LocationListItem, LocationListAdapter.VH>(LocationListDiff()) {
+    ListAdapter<LocationListItem, LocationListAdapter.VH>(
+        LocationListDiff()
+    ) {
     private val icFavourite by lazy {
         ContextCompat.getDrawable(context, R.drawable.ic_favorite)
     }

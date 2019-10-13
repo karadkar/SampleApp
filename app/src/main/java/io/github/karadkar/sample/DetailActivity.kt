@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.squareup.picasso.Picasso
 import io.github.karadkar.sample.databinding.DetailActivityBinding
+import io.github.karadkar.sample.main.LocationListItem
 
 class DetailActivity : AppCompatActivity() {
 
