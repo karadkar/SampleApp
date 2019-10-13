@@ -23,6 +23,7 @@ class LocationDetailActivity : AppCompatActivity() {
         setSupportActionBar(binding.toolbar)
         supportActionBar?.apply {
             setDisplayHomeAsUpEnabled(true)
+            setTitle(placeName)
         }
 
         val viewModel = ViewModelProviders.of(this)[LocationDetailViewModel::class.java]

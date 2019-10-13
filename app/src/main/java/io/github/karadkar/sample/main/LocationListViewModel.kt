@@ -5,10 +5,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.LiveDataReactiveStreams
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import io.github.karadkar.sample.data.ApiHelper
-import io.github.karadkar.sample.data.LCE
-import io.github.karadkar.sample.data.LocationApiService
-import io.github.karadkar.sample.data.LocationDao
+import com.squareup.picasso.Picasso
+import io.github.karadkar.sample.data.*
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -29,14 +27,21 @@ class LocationListViewModel(
             .observeOn(AndroidSchedulers.mainThread())
             .doOnSubscribe { apiResultLiveData.value = LCE.loading(true) }
             .flatMap { result -> dao.save(result).andThen(Single.just(result)) }
-            .subscribe({
+            .subscribe({ result ->
                 apiResultLiveData.value = LCE.content(true)
                 Log.i("MainVM", "success")
+                cacheImages(result.locations)
             }, {
                 apiResultLiveData.value = LCE.error(it)
                 Log.e("MainVM", "error", it)
             })
         disposible.add(sub)
+    }
+
+    private fun cacheImages(items: List<LocationEntity>) {
+        items.forEach { location ->
+            Picasso.get().load(location.imageUrl).fetch()
+        }
     }
 
     fun getLocations(): LiveData<List<LocationListItem>> {
