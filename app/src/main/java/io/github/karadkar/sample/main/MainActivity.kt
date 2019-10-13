@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import io.github.karadkar.sample.DetailActivity
 import io.github.karadkar.sample.R
 import io.github.karadkar.sample.databinding.ActivityMainBinding
 import io.github.karadkar.sample.db.LCE
@@ -54,7 +55,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun onClickLocation(item: LocationListItem) {
-
+        startActivity(DetailActivity.getIntent(this, placeName = item.title))
     }
 
     private fun onClickFavourite(item: LocationListItem) {

@@ -31,6 +31,12 @@ class LocationDao(private val realm: Realm = Realm.getDefaultInstance()) : Close
         }
     }
 
+    fun Realm.getLocation(placeName: String): LocationEntity? {
+        return this.where(LocationEntity::class.java)
+            .equalTo(LocationEntityFields.PLACE, placeName)
+            .findFirst()
+    }
+
     fun save(result: LocationResult): Completable {
         return realm.completableTransaction {
             it.copyToRealmOrUpdate(result)
@@ -58,13 +64,15 @@ class LocationDao(private val realm: Realm = Realm.getDefaultInstance()) : Close
 
     fun toggleFavourite(place: String): Completable {
         return realm.completableTransaction {
-            it.where(LocationEntity::class.java)
-                .equalTo(LocationEntityFields.PLACE, place)
-                .findFirst()?.let { item ->
+            it.getLocation(place)?.let { item ->
                     item.isFavourite = !item.isFavourite
-                }
+            }
         }
     }
+
+    fun getLocationImage(placeName: String) = realm.getLocation(placeName)?.imageUrl ?: ""
+    fun getLocationDate(placeName: String) = realm.getLocation(placeName)?.dateString ?: ""
+    fun getLocationDescription(placeName: String) = realm.getLocation(placeName)?.description ?: ""
 
     override fun close() {
         realm.close()
