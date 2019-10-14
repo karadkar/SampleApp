@@ -31,6 +31,7 @@ class LocationDetailActivity : AppCompatActivity() {
         Picasso.get().load(viewModel.getLocationImage(placeName)).into(binding.ivLocationImage)
         binding.tvDate.text = viewModel.getLocationDate(placeName)
         binding.tvDescription.text = viewModel.getLocationDescription(placeName)
+        binding.tvPrice.text = String.format("\u20B9 %s", viewModel.getLocationPrice(placeName))
     }
 
     override fun onSupportNavigateUp(): Boolean {
