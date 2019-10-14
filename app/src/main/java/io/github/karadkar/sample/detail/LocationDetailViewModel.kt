@@ -14,6 +14,7 @@ class LocationDetailViewModel(
 
     fun getLocationDate(placeName: String) = dao.getLocationDate(placeName)
     fun getLocationDescription(placeName: String) = dao.getLocationDescription(placeName)
+    fun getLocationPrice(placeName: String) = dao.getLocationPrice(placeName)
 
     override fun onCleared() {
         disposible.dispose()

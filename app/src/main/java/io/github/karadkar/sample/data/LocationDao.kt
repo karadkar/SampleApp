@@ -73,6 +73,7 @@ class LocationDao(private val realm: Realm = Realm.getDefaultInstance()) : Close
     fun getLocationImage(placeName: String) = realm.getLocation(placeName)?.imageUrl ?: ""
     fun getLocationDate(placeName: String) = realm.getLocation(placeName)?.getDisaplyDate() ?: ""
     fun getLocationDescription(placeName: String) = realm.getLocation(placeName)?.description ?: ""
+    fun getLocationPrice(placeName: String) = realm.getLocation(placeName)?.price ?: ""
 
     override fun close() {
         realm.close()
