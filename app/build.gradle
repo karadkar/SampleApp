@@ -54,4 +54,8 @@ dependencies {
 
     implementation Libraries.rxJava2
     implementation Libraries.rxAndroid2
+
+    // Room SqlLite db
+    implementation Libraries.roomDbRuntime
+    kapt Libraries.roomDbRuntime
 }

@@ -5,11 +5,15 @@
 object Versions {
     const val gradlePlugin = "3.1.4"
     const val archExtensions = "2.1.0"
+    const val roomDb = "2.2.3"
 }
 
 object Libraries {
     const val lifecycleExtensions = "androidx.lifecycle:lifecycle-extensions:2.1.0" // live-data view-model
     const val lifecycleReactiveStreamExtension = "android.arch.lifecycle:reactivestreams:1.1.1" // rx to live-data
+
+    const val roomDbRuntime = "androidx.room:room-runtime:${Versions.roomDb}"
+    const val roomDbCompiler = "androidx.room:room-compiler:${Versions.roomDb}"
 
     const val kotlinStdlibJdk7 = "org.jetbrains.kotlin:kotlin-stdlib-jdk7"
     const val appcompat = "androidx.appcompat:appcompat:1.1.0"
