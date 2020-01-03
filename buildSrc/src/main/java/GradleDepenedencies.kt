@@ -3,9 +3,11 @@
  * check https://handstandsam.com/2018/02/11/kotlin-buildsrc-for-better-gradle-dependency-management/
  */
 object Versions {
-    const val gradlePlugin = "3.1.4"
+    const val gradlePlugin = "3.5.1"
     const val archExtensions = "2.1.0"
     const val roomDb = "2.2.3"
+    const val realmDbGradlePlugin = "5.12.0"
+    const val kotlin = "1.3.50"
 }
 
 object Libraries {
@@ -13,9 +15,11 @@ object Libraries {
     const val lifecycleReactiveStreamExtension = "android.arch.lifecycle:reactivestreams:1.1.1" // rx to live-data
 
     const val roomDbRuntime = "androidx.room:room-runtime:${Versions.roomDb}"
-    const val roomDbCompiler = "androidx.room:room-compiler:${Versions.roomDb}"
+    const val roomDbKaptCompiler = "androidx.room:room-compiler:${Versions.roomDb}"
+    const val roomDbRxjava = "androidx.room:room-rxjava2:${Versions.roomDb}"
+    const val roomDbKtx = "androidx.room:room-ktx:${Versions.roomDb}"
 
-    const val kotlinStdlibJdk7 = "org.jetbrains.kotlin:kotlin-stdlib-jdk7"
+    const val kotlinStdlibJdk7 = "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${Versions.kotlin}"
     const val appcompat = "androidx.appcompat:appcompat:1.1.0"
     const val coreKtx = "androidx.core:core-ktx:1.1.0"
 
@@ -33,7 +37,7 @@ object Libraries {
     const val retrofitRxJava2Adapter = "com.squareup.retrofit2:adapter-rxjava2:2.5.0"
 
     const val kaptRealmFieldHelper = "dk.ilios:realmfieldnameshelper:1.1.1"
-    const val kaptDatabindingCompiler = "com.android.databinding:compiler"
+    const val kaptDatabindingCompiler = "com.android.databinding:compiler:${Versions.gradlePlugin}"
 
     const val junit = "junit:junit:4.12"
     const val testRunner = "androidx.test:runner:1.2.0"

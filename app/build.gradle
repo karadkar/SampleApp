@@ -27,7 +27,7 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation"$Libraries.kotlinStdlibJdk7:$kotlin_version"
+    implementation Libraries.kotlinStdlibJdk7
     implementation Libraries.appcompat
     implementation Libraries.coreKtx
 
@@ -45,7 +45,7 @@ dependencies {
     androidTestImplementation Libraries.espressoCore
 
     //DataBinding compiler
-    kapt "$Libraries.kaptDatabindingCompiler:$gradle_plugin_version"
+    kapt Libraries.kaptDatabindingCompiler
     kapt Libraries.kaptRealmFieldHelper
 
     implementation Libraries.retrofit
