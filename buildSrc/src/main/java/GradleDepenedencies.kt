@@ -42,4 +42,9 @@ object Libraries {
     const val junit = "junit:junit:4.12"
     const val testRunner = "androidx.test:runner:1.2.0"
     const val espressoCore = "androidx.test.espresso:espresso-core:3.2.0"
+    const val truthAssersions = "com.google.truth:truth:0.42" // assertions
+    const val mockk = "io.mockk:mockk:1.9.3"
+
+    // use same version as lifecycle to  avoid issue https://stackoverflow.com/q/55336613/2804351
+    const val coreTesting = "androidx.arch.core:core-testing:${Versions.archExtensions}"
 }

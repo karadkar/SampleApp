@@ -41,8 +41,11 @@ dependencies {
     implementation Libraries.picasso
 
     testImplementation Libraries.junit
+    testImplementation Libraries.truthAssersions
+
     androidTestImplementation Libraries.testRunner
     androidTestImplementation Libraries.espressoCore
+    androidTestImplementation Libraries.truthAssersions
 
     //DataBinding compiler
     kapt Libraries.kaptDatabindingCompiler
