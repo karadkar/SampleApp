@@ -17,14 +17,16 @@
         tools:targetApi="n">
 
         <activity android:name=".main.LocationListActivity">
+        </activity>
+
+        <activity android:name=".detail.LocationDetailActivity" />
+        <activity android:name=".PackageListActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".detail.LocationDetailActivity" />
     </application>
 
 </manifest>
