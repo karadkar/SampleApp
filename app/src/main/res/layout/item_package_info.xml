@@ -8,11 +8,13 @@
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/container"
         android:orientation="vertical"
         android:layout_width="160dp"
         android:layout_height="90dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="8dp"
+        android:animateLayoutChanges="true"
         android:background="@color/colorPrimary">
 
         <ImageView

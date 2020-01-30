@@ -34,9 +34,20 @@ class PackageListAdapter(
         }
     }
 
-    inner class VH(val binding: ItemPackageInfoBinding) : RecyclerView.ViewHolder(binding.root), View.OnClickListener {
+    inner class VH(
+        val binding: ItemPackageInfoBinding
+    ) : RecyclerView.ViewHolder(binding.root),
+        View.OnClickListener,
+        View.OnFocusChangeListener,
+        View.OnLongClickListener {
+
+
         init {
-            binding.root.setOnClickListener(this)
+            binding.root.apply {
+                setOnClickListener(this@VH)
+                onFocusChangeListener = this@VH
+                setOnLongClickListener(this@VH)
+            }
         }
 
         fun bind(item: PackageInfo) {
@@ -50,5 +61,23 @@ class PackageListAdapter(
         override fun onClick(v: View?) {
             onClickItem(items[adapterPosition])
         }
+
+        override fun onLongClick(v: View?): Boolean {
+            return true
+        }
+
+        override fun onFocusChange(v: View?, hasFocus: Boolean) {
+            val scale = if (hasFocus) 1.25f else 1.0f
+            val elevation = if (hasFocus) 10.0f else 0.0f
+            binding.root.animate()
+                .setDuration(300)
+                .scaleX(scale)
+                .scaleY(scale)
+                .withStartAction {
+                    binding.root.elevation = elevation
+                }
+                .start()
+        }
+
     }
 }
