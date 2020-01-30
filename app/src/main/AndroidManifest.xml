@@ -4,6 +4,16 @@
     package="io.github.karadkar.sample">
 
     <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- only run this app on leanback ui-->
+    <uses-feature
+        android:name="android.software.leanback"
+        android:required="true" />
+
+    <uses-feature
+        android:name="android.hardware.touchscreen"
+        android:required="false" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -20,11 +30,16 @@
         </activity>
 
         <activity android:name=".detail.LocationDetailActivity" />
-        <activity android:name=".PackageListActivity">
+
+        <activity
+            android:name=".PackageListActivity"
+            android:banner="@drawable/tv_banner"
+            android:label="@string/app_name"
+            android:theme="@style/TvAppTheme">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
             </intent-filter>
         </activity>
     </application>

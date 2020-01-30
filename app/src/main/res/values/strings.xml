@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Sample App</string>
+    <string name="app_name">Tv Sample App</string>
     <string name="welcome_to_travelmate">Welcome to TravelMate</string>
     <string name="format_custome_name">Hi %s,</string>
     <string name="price_per_person">Price per person</string>

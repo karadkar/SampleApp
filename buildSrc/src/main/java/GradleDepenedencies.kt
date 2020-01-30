@@ -47,4 +47,7 @@ object Libraries {
 
     // use same version as lifecycle to  avoid issue https://stackoverflow.com/q/55336613/2804351
     const val coreTesting = "androidx.arch.core:core-testing:${Versions.archExtensions}"
+
+    // tv libraries
+    const val leanbackTv = "androidx.leanback:leanback:1.0.0"
 }

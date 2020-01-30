@@ -61,4 +61,6 @@ dependencies {
     // Room SqlLite db
     implementation Libraries.roomDbRuntime
     kapt Libraries.roomDbRuntime
+
+    implementation Libraries.leanbackTv
 }
