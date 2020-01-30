@@ -1,42 +1,38 @@
 package io.github.karadkar.sample
 
-import android.app.Activity
 import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.net.Uri
 import android.os.Bundle
-import android.widget.LinearLayout
-import android.widget.TextView
-import androidx.core.widget.NestedScrollView
+import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.FragmentActivity
+import androidx.recyclerview.widget.GridLayoutManager
+import io.github.karadkar.sample.databinding.PackgeListingActivityBinding
 
-class PackageListActivity : Activity() {
+class PackageListActivity : FragmentActivity() {
+    lateinit var binding: PackgeListingActivityBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val scroll = NestedScrollView(this)
 
-        val container = LinearLayout(this).also { it.orientation = LinearLayout.VERTICAL }
-        scroll.addView(container)
+        binding = DataBindingUtil.setContentView(this, R.layout.packge_listing_activity)
 
-        val packages: MutableList<ApplicationInfo> = packageManager.getInstalledApplications(0)
-        packages.filter { true }
-            .forEach { info ->
-                container.addView(TextView(this).apply {
-                    setCompoundDrawablesWithIntrinsicBounds(info.loadIcon(packageManager), null, null, null)
-                    text = info.loadLabel(packageManager)
+        binding.rvPackageListing.layoutManager = GridLayoutManager(this, 5, GridLayoutManager.VERTICAL, false)
 
-                    setOnClickListener {
-                        openApp(info.packageName)
-                    }
 
-                    setOnLongClickListener {
-                        // launch app detail settings
-                        openAppDetailSetting(info.packageName)
-                        return@setOnLongClickListener true
-                    }
-                })
-            }
+        val data: MutableList<ApplicationInfo> = packageManager.getInstalledApplications(0)
+        val listItems = data.filter { true }
+            .mapTo(mutableListOf(), { ai ->
+                return@mapTo PackageInfo(
+                    label = ai.loadLabel(packageManager).toString(),
+                    packageName = ai.packageName,
+                    iconDrawable = ai.loadIcon(packageManager)
+                )
+            })
 
-        setContentView(scroll)
+        binding.rvPackageListing.adapter = PackageListAdapter(this, listItems, onClickItem = {
+            openAppDetailSetting(it.packageName)
+        })
     }
 
     private fun openApp(packageName: String) {
