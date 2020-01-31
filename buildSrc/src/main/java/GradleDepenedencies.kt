@@ -3,11 +3,11 @@
  * check https://handstandsam.com/2018/02/11/kotlin-buildsrc-for-better-gradle-dependency-management/
  */
 object Versions {
-    const val gradlePlugin = "3.5.1"
+    const val gradlePlugin = "3.5.3"
     const val archExtensions = "2.1.0"
     const val roomDb = "2.2.3"
     const val realmDbGradlePlugin = "5.12.0"
-    const val kotlin = "1.3.50"
+    const val kotlin = "1.3.61"
 }
 
 object Libraries {
@@ -41,6 +41,7 @@ object Libraries {
 
     const val junit = "junit:junit:4.12"
     const val testRunner = "androidx.test:runner:1.2.0"
+    const val androidXJunit = "androidx.test.ext:junit:1.1.1"
     const val espressoCore = "androidx.test.espresso:espresso-core:3.2.0"
     const val truthAssersions = "com.google.truth:truth:0.42" // assertions
     const val mockk = "io.mockk:mockk:1.9.3"

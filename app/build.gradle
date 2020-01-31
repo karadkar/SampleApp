@@ -3,6 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'realm-android'
+apply plugin: 'com.slack.keeper'
 
 android {
     compileSdkVersion 29
@@ -14,10 +15,14 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        signingConfig = signingConfigs.debug
     }
+
+//    testBuildType = "debug"
+
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -46,6 +51,7 @@ dependencies {
     androidTestImplementation Libraries.testRunner
     androidTestImplementation Libraries.espressoCore
     androidTestImplementation Libraries.truthAssersions
+    androidTestImplementation Libraries.androidXJunit
 
     //DataBinding compiler
     kapt Libraries.kaptDatabindingCompiler
