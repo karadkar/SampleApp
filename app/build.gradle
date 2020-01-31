@@ -2,7 +2,6 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
-apply plugin: 'realm-android'
 apply plugin: 'com.slack.keeper'
 
 android {
@@ -18,7 +17,7 @@ android {
         signingConfig = signingConfigs.debug
     }
 
-//    testBuildType = "debug"
+//    testBuildType = "release"
 
     buildTypes {
         release {
@@ -33,7 +32,6 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation Libraries.kotlinStdlibJdk7
-    implementation Libraries.appcompat
     implementation Libraries.coreKtx
 
     implementation Libraries.lifecycleReactiveStreamExtension
@@ -57,16 +55,6 @@ dependencies {
     kapt Libraries.kaptDatabindingCompiler
     kapt Libraries.kaptRealmFieldHelper
 
-    implementation Libraries.retrofit
-    implementation Libraries.retrofitJacksonConverter
-    implementation Libraries.retrofitRxJava2Adapter
-
-    implementation Libraries.rxJava2
-    implementation Libraries.rxAndroid2
-
-    // Room SqlLite db
-    implementation Libraries.roomDbRuntime
-    kapt Libraries.roomDbRuntime
 
     implementation Libraries.leanbackTv
 }

@@ -17,7 +17,7 @@ class PackageListActivity : FragmentActivity() {
 
         binding = DataBindingUtil.setContentView(this, R.layout.packge_listing_activity)
 
-        binding.rvPackageListing.layoutManager = GridLayoutManager(this, 5, GridLayoutManager.VERTICAL, false)
+        binding.rvPackageListing.layoutManager = GridLayoutManager(this, 4, GridLayoutManager.VERTICAL, false)
 
 
         val data: MutableList<ApplicationInfo> = packageManager.getInstalledApplications(0)
