@@ -17,7 +17,7 @@ android {
         signingConfig = signingConfigs.debug
     }
 
-//    testBuildType = "release"
+    testBuildType = "release"
 
     buildTypes {
         release {
