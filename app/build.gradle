@@ -2,7 +2,6 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
-apply plugin: 'realm-android'
 
 android {
     compileSdkVersion 29
@@ -36,9 +35,6 @@ dependencies {
 
     implementation Libraries.constraintLayout
     implementation Libraries.materialComponents
-    implementation Libraries.recyclerView
-    implementation Libraries.swipeRefreashLayout
-    implementation Libraries.picasso
 
     testImplementation Libraries.junit
     testImplementation Libraries.truthAssersions
@@ -49,16 +45,7 @@ dependencies {
 
     //DataBinding compiler
     kapt Libraries.kaptDatabindingCompiler
-    kapt Libraries.kaptRealmFieldHelper
-
-    implementation Libraries.retrofit
-    implementation Libraries.retrofitJacksonConverter
-    implementation Libraries.retrofitRxJava2Adapter
 
     implementation Libraries.rxJava2
     implementation Libraries.rxAndroid2
-
-    // Room SqlLite db
-    implementation Libraries.roomDbRuntime
-    kapt Libraries.roomDbRuntime
 }
