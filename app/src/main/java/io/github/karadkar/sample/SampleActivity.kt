@@ -5,6 +5,7 @@ import android.view.View
 import android.view.ViewTreeObserver
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
 import io.github.karadkar.sample.databinding.ActivitySampleBinding
@@ -36,8 +37,15 @@ class SampleActivity : AppCompatActivity() {
     private fun createGrid() {
         val totalBoxesInRow = totalBoxesInRow(binding.rvGrid)
         val totalBoxesInColumn = totalBoxesInColumn(binding.rvGrid)
+
         vm.createBoxGrid(totalBoxesInRow, totalBoxesInColumn)
-        boxAdapter = BoxAdapter(this, this::onClickBoxItem)
+
+        boxAdapter = BoxAdapter(
+            context = this,
+            rows = totalBoxesInRow,
+            columns = totalBoxesInColumn,
+            onClickBox = this::onClickBoxItem
+        )
 
         val layoutManager = GridLayoutManager(
             this@SampleActivity,
@@ -48,6 +56,10 @@ class SampleActivity : AppCompatActivity() {
             rvGrid.layoutManager = layoutManager
         }
         boxAdapter.submitList(vm.getBoxGridList())
+
+        vm.find().observe(this, Observer { box ->
+            boxAdapter.onUpdateBox(box)
+        })
     }
 
     private fun onClickBoxItem(row: Int, col: Int) {

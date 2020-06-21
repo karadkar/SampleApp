@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="box_height">24dp</dimen>
-    <dimen name="box_width">24dp</dimen>
+    <dimen name="box_height">64dp</dimen>
+    <dimen name="box_width">64dp</dimen>
     <integer name="box_animation_speed">300</integer>
 </resources>

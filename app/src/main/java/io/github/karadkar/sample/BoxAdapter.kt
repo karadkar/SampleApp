@@ -13,6 +13,8 @@ import io.github.karadkar.sample.databinding.ItemBoxBinding
 
 class BoxAdapter(
     val context: Context,
+    val rows: Int,
+    val columns: Int,
     val onClickBox: (x: Int, y: Int) -> Unit
 ) : ListAdapter<GridBox, BoxAdapter.VH>(GridListDiff()) {
 
@@ -24,6 +26,13 @@ class BoxAdapter(
 
     override fun onBindViewHolder(holder: VH, position: Int) {
         holder.onBind(getItem(position))
+    }
+
+    fun onUpdateBox(box: GridBox) {
+        val index = ((box.row * columns) + box.col)
+        getItem(index)?.visited = box.visited
+        logError("in:$index, col:$columns, $box")
+        notifyItemChanged(index)
     }
 
     inner class VH(private val binding: ItemBoxBinding) : RecyclerView.ViewHolder(binding.root), View.OnClickListener {
