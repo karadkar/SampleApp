@@ -5,16 +5,18 @@ import android.view.View
 import android.view.ViewTreeObserver
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
 import io.github.karadkar.sample.databinding.ActivitySampleBinding
 
 class SampleActivity : AppCompatActivity() {
     lateinit var binding: ActivitySampleBinding
     lateinit var boxAdapter: BoxAdapter
-
+    lateinit var vm: PathfinderViewModel
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_sample)
+        vm = ViewModelProviders.of(this)[PathfinderViewModel::class.java]
     }
 
     override fun onResume() {
@@ -30,12 +32,11 @@ class SampleActivity : AppCompatActivity() {
 
 
     // grid should only be created when height/width are available at runtime
-    lateinit var boxGrid: Array<Array<GridBox>>
 
     private fun createGrid() {
         val totalBoxesInRow = totalBoxesInRow(binding.rvGrid)
         val totalBoxesInColumn = totalBoxesInColumn(binding.rvGrid)
-        boxGrid = createBoxGrid(totalBoxesInRow, totalBoxesInColumn)
+        vm.createBoxGrid(totalBoxesInRow, totalBoxesInColumn)
         boxAdapter = BoxAdapter(this, this::onClickBoxItem)
 
         val layoutManager = GridLayoutManager(
@@ -46,37 +47,19 @@ class SampleActivity : AppCompatActivity() {
             rvGrid.adapter = boxAdapter
             rvGrid.layoutManager = layoutManager
         }
-        boxAdapter.submitList(getBoxGridList())
+        boxAdapter.submitList(vm.getBoxGridList())
     }
 
     private fun onClickBoxItem(x: Int, y: Int) {
-        val box = boxGrid[x][y]
-        boxGrid[x][y] = box.copy(visited = !box.visited)
-        boxAdapter.submitList(getBoxGridList())
+        vm.onClickBoxItem(x, y)
+        boxAdapter.submitList(vm.getBoxGridList())
     }
 
-    fun totalBoxesInRow(parent: View): Int {
+    private fun totalBoxesInRow(parent: View): Int {
         return parent.width / R.dimen.box_width.getDimension(this)
     }
 
-    fun totalBoxesInColumn(parent: View): Int {
+    private fun totalBoxesInColumn(parent: View): Int {
         return (parent.height / R.dimen.box_height.getDimension(this))
-    }
-
-    fun getBoxGridList(): List<GridBox> {
-        return mutableListOf<GridBox>().apply {
-            boxGrid.forEach { gridRow ->
-                addAll(gridRow.toList())
-            }
-        }
-    }
-
-    fun createBoxGrid(rowCount: Int, columnCount: Int): Array<Array<GridBox>> {
-        val boxGrid: Array<Array<GridBox>> = Array(rowCount) { row ->
-            Array(columnCount) { col ->
-                GridBox(x = row, y = col)
-            }
-        }
-        return boxGrid
     }
 }
