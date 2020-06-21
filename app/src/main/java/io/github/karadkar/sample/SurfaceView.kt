@@ -25,7 +25,7 @@ class SurfaceView : View {
         borderPaint.apply {
             color = ContextCompat.getColor(context, R.color.colorAccent)
             style = Paint.Style.STROKE
-            strokeWidth = 4.toPx.toFloat()
+            strokeWidth = 2.toPx.toFloat()
         }
     }
 

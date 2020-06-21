@@ -11,7 +11,10 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import io.github.karadkar.sample.databinding.ItemBoxBinding
 
-class BoxAdapter(val context: Context) : ListAdapter<GridBox, BoxAdapter.VH>(GridListDiff()) {
+class BoxAdapter(
+    val context: Context,
+    val onClickBox: (x: Int, y: Int) -> Unit
+) : ListAdapter<GridBox, BoxAdapter.VH>(GridListDiff()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
         return VH(
@@ -35,7 +38,9 @@ class BoxAdapter(val context: Context) : ListAdapter<GridBox, BoxAdapter.VH>(Gri
         }
 
         override fun onClick(v: View?) {
+            val box = getItem(adapterPosition)
             binding.surfaceView.transformToCircle()
+            onClickBox.invoke(box.x, box.y)
         }
     }
 
