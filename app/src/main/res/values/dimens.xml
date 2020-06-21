@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="box_height">32dp</dimen>
+    <dimen name="box_width">50dp</dimen>
+    <integer name="box_animation_speed">200</integer>
+</resources>

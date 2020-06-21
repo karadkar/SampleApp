@@ -32,7 +32,7 @@ class SurfaceView : View {
     private var progress = 0f
     fun transformToCircle() {
         val animator = ValueAnimator.ofFloat(0f, 100f)
-        animator.duration = 300
+        animator.duration = resources.getInteger(R.integer.box_animation_speed).toLong()
         animator.addUpdateListener {
             progress = (it.animatedValue as Float)
             invalidate()

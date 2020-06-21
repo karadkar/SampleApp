@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+
+    </data>
+
+    <FrameLayout
+        android:id="@+id/box_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <io.github.karadkar.sample.SurfaceView
+            android:id="@+id/surface_view"
+            android:layout_width="@dimen/box_width"
+            android:layout_height="@dimen/box_height" />
+    </FrameLayout>
+</layout>
