@@ -43,7 +43,7 @@ class BoxAdapter(
         override fun onClick(v: View?) {
             val box = getItem(adapterPosition)
 //            binding.surfaceView.transformToCircle()
-            onClickBox.invoke(box.x, box.y)
+            onClickBox.invoke(box.row, box.col)
         }
     }
 

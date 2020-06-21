@@ -10,7 +10,7 @@ class PathfinderViewModel(app: Application) : AndroidViewModel(app) {
     fun getBoxGridList(): List<GridBox> {
         return mutableListOf<GridBox>().apply {
             boxGrid.forEach { gridRow ->
-                addAll(gridRow.toList())
+                addAll(gridRow)
             }
         }
     }
@@ -18,7 +18,7 @@ class PathfinderViewModel(app: Application) : AndroidViewModel(app) {
     fun createBoxGrid(rowCount: Int, columnCount: Int) {
         boxGrid = Array(rowCount) { row ->
             Array(columnCount) { col ->
-                GridBox(x = row, y = col)
+                GridBox(row = row, col = col)
             }
         }
     }

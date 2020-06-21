@@ -50,8 +50,8 @@ class SampleActivity : AppCompatActivity() {
         boxAdapter.submitList(vm.getBoxGridList())
     }
 
-    private fun onClickBoxItem(x: Int, y: Int) {
-        vm.onClickBoxItem(x, y)
+    private fun onClickBoxItem(row: Int, col: Int) {
+        vm.onClickBoxItem(row, col)
         boxAdapter.submitList(vm.getBoxGridList())
     }
 
