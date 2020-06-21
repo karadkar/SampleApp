@@ -33,13 +33,16 @@ class BoxAdapter(
 
         fun onBind(box: GridBox) {
             binding.apply {
+                if (box.visited) {
+                    surfaceView.transformToCircle()
+                }
                 executePendingBindings()
             }
         }
 
         override fun onClick(v: View?) {
             val box = getItem(adapterPosition)
-            binding.surfaceView.transformToCircle()
+//            binding.surfaceView.transformToCircle()
             onClickBox.invoke(box.x, box.y)
         }
     }

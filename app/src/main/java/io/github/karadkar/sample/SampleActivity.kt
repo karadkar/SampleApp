@@ -33,8 +33,8 @@ class SampleActivity : AppCompatActivity() {
     lateinit var boxGrid: Array<Array<GridBox>>
 
     private fun createGrid() {
-        val totalBoxesInRow = totalBoxesInRow(binding.gridContainer)
-        val totalBoxesInColumn = totalBoxesInColumn(binding.gridContainer)
+        val totalBoxesInRow = totalBoxesInRow(binding.rvGrid)
+        val totalBoxesInColumn = totalBoxesInColumn(binding.rvGrid)
         boxGrid = createBoxGrid(totalBoxesInRow, totalBoxesInColumn)
         boxAdapter = BoxAdapter(this, this::onClickBoxItem)
 
@@ -52,6 +52,7 @@ class SampleActivity : AppCompatActivity() {
     private fun onClickBoxItem(x: Int, y: Int) {
         val box = boxGrid[x][y]
         boxGrid[x][y] = box.copy(visited = !box.visited)
+        boxAdapter.submitList(getBoxGridList())
     }
 
     fun totalBoxesInRow(parent: View): Int {
