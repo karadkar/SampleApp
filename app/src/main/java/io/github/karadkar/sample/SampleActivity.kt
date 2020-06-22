@@ -35,27 +35,26 @@ class SampleActivity : AppCompatActivity() {
     // grid should only be created when height/width are available at runtime
 
     private fun createGrid() {
-        val totalBoxesInRow = totalBoxesInRow(binding.rvGrid)
-        val totalBoxesInColumn = totalBoxesInColumn(binding.rvGrid)
+        val columnCount = getColumnCount(binding.rvGrid)
+        val rowCount = getRownCount(binding.rvGrid)
 
-        vm.createBoxGrid(totalBoxesInRow, totalBoxesInColumn)
+        vm.createBoxGrid(rowCount, columnCount)
 
         boxAdapter = BoxAdapter(
             context = this,
-            rows = totalBoxesInRow,
-            columns = totalBoxesInColumn,
-            onClickBox = this::onClickBoxItem
+            onClickBox = this::onClickBoxItem,
+            grid = vm.boxGrid
         )
 
         val layoutManager = GridLayoutManager(
             this@SampleActivity,
-            totalBoxesInRow, GridLayoutManager.VERTICAL, false
+            columnCount, GridLayoutManager.VERTICAL, false
         )
         binding.apply {
             rvGrid.adapter = boxAdapter
             rvGrid.layoutManager = layoutManager
         }
-        boxAdapter.submitList(vm.getBoxGridList())
+        boxAdapter.submitList(vm.boxGrid)
 
         vm.find().observe(this, Observer { box ->
             boxAdapter.onUpdateBox(box)
@@ -64,14 +63,14 @@ class SampleActivity : AppCompatActivity() {
 
     private fun onClickBoxItem(row: Int, col: Int) {
         vm.onClickBoxItem(row, col)
-        boxAdapter.submitList(vm.getBoxGridList())
+        boxAdapter.submitList(vm.boxGrid)
     }
 
-    private fun totalBoxesInRow(parent: View): Int {
+    private fun getColumnCount(parent: View): Int {
         return parent.width / R.dimen.box_width.getDimension(this)
     }
 
-    private fun totalBoxesInColumn(parent: View): Int {
+    private fun getRownCount(parent: View): Int {
         return (parent.height / R.dimen.box_height.getDimension(this))
     }
 }

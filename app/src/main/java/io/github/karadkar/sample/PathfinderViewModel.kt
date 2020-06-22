@@ -35,7 +35,10 @@ class PathfinderViewModel(app: Application) : AndroidViewModel(app) {
 
     fun find(): LiveData<GridBox> {
         val pathFinder = BFSPathfinder()
-        val sub = pathFinder.find(boxGrid.first().first(), boxGrid.last().last(), boxGrid)
+        val start = boxGrid.first().first()
+        val target = boxGrid.last().last()
+
+        val sub = pathFinder.find(start, target, boxGrid)
             .subscribeOn(Schedulers.computation())
             .observeOn(AndroidSchedulers.mainThread())
             .doOnNext { logError("emiting $it") }

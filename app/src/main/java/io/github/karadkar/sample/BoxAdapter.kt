@@ -7,16 +7,15 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import io.github.karadkar.sample.databinding.ItemBoxBinding
+import kotlin.math.floor
 
 class BoxAdapter(
     val context: Context,
-    val rows: Int,
-    val columns: Int,
+    var grid: Array<Array<GridBox>>,
     val onClickBox: (x: Int, y: Int) -> Unit
-) : ListAdapter<GridBox, BoxAdapter.VH>(GridListDiff()) {
+) : RecyclerView.Adapter<BoxAdapter.VH>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
         return VH(
@@ -29,11 +28,34 @@ class BoxAdapter(
     }
 
     fun onUpdateBox(box: GridBox) {
-        val index = ((box.row * columns) + box.col)
-        getItem(index)?.visited = box.visited
-        logError("in:$index, col:$columns, $box")
+        val index = getGridIndex(box)
+        grid[box.row][box.col].visited = box.visited
+        logError("in:$index, col:${columnCount}, $box")
         notifyItemChanged(index)
     }
+
+
+    fun getItem(index: Int): GridBox {
+        val row = floor(index / columnCount.toDouble()).toInt()
+        val columns = (index % columnCount)
+        return grid[row][columns]
+    }
+
+    override fun getItemCount(): Int {
+        return rowCount * columnCount
+    }
+
+    fun getGridIndex(box: GridBox): Int {
+        return ((box.row * columnCount) + box.col)
+    }
+
+    fun submitList(grid: Array<Array<GridBox>>) {
+        this.grid = grid
+        notifyDataSetChanged()
+    }
+
+    val rowCount = grid.size
+    val columnCount = if (grid.isEmpty()) 0 else grid[0].size
 
     inner class VH(private val binding: ItemBoxBinding) : RecyclerView.ViewHolder(binding.root), View.OnClickListener {
         init {
@@ -45,6 +67,7 @@ class BoxAdapter(
                 if (box.visited) {
                     surfaceView.transformToCircle()
                 }
+                tvOverlay.text = "${box.row},${box.col}"
                 executePendingBindings()
             }
         }
