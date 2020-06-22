@@ -22,6 +22,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            tools:text="1,2" />
+            android:textSize="10sp"
+            tools:text="19,21" />
     </FrameLayout>
 </layout>

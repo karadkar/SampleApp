@@ -33,7 +33,7 @@ class BFSPathfinder() {
                         queue.offer(grid[r][c])
                     }
                 }
-                Thread.sleep(500L)
+                Thread.sleep(100L)
             }
 
             // finished processing queue

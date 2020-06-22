@@ -35,7 +35,7 @@ class PathfinderViewModel(app: Application) : AndroidViewModel(app) {
 
     fun find(): LiveData<GridBox> {
         val pathFinder = BFSPathfinder()
-        val start = boxGrid.first().first()
+        val start = boxGrid[boxGrid.size / 2][boxGrid[0].size / 2]
         val target = boxGrid.last().last()
 
         val sub = pathFinder.find(start, target, boxGrid)
