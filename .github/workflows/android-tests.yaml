@@ -30,8 +30,9 @@ jobs:
           path: ~/.gradle/caches
           key: gradle-${{ runner.os }}-${{ hashFiles('**/build.gradle') }}-${{ hashFiles('**/app/build.gradle') }}-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}-${{ hashFiles('**/buildSrc/src/main/java/GradleDepenedencies.kt') }}
 
+      # to workaround sdk dir issue on github-actions, using password-less sudo
       - name: Run Unit Tests
-        run: ./gradlew test
+        run: sudo ./gradlew test
 
       - name: Build Debug Apk
-        run: ./gradlew assembleDebug
+        run: sudo ./gradlew assembleDebug
