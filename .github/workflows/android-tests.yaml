@@ -2,9 +2,9 @@ name: Android Tests and apk build
 
 on:
   push:
-    branches: [ master ]
+    branches: [ worldofplay-assignment ]
   pull_request:
-    branches: [ master ]
+    branches: [ worldofplay-assignment ]
 
 jobs:
   build:
