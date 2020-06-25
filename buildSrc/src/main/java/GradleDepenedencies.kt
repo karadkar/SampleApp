@@ -24,7 +24,7 @@ object Libraries {
     const val coreKtx = "androidx.core:core-ktx:1.1.0"
 
     const val recyclerView = "androidx.recyclerview:recyclerview:1.0.0"
-    const val materialComponents = "com.google.android.material:material:1.0.0"
+    const val materialComponents = "com.google.android.material:material:1.1.0"
     const val swipeRefreashLayout = "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
     const val picasso = "com.squareup.picasso:picasso:2.71828"
     const val constraintLayout = "androidx.constraintlayout:constraintlayout:1.1.3"
