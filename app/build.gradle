@@ -48,4 +48,6 @@ dependencies {
 
     implementation Libraries.rxJava2
     implementation Libraries.rxAndroid2
+
+    implementation Libraries.koinViewModel
 }

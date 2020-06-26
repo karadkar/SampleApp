@@ -4,19 +4,18 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import io.github.karadkar.sample.databinding.ActivitySampleBinding
 import io.github.karadkar.sample.login.LoginFragment
 import io.github.karadkar.sample.login.LoginViewModel
+import org.koin.android.viewmodel.ext.android.viewModel
 
 class SampleActivity : AppCompatActivity() {
     lateinit var binding: ActivitySampleBinding
-    lateinit var viewModel: LoginViewModel
+    private val viewModel: LoginViewModel by viewModel()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_sample)
-
-        viewModel = ViewModelProviders.of(this)[LoginViewModel::class.java]
 
         viewModel.nightModeValue().observe(this, Observer { value ->
             if (value != null) {

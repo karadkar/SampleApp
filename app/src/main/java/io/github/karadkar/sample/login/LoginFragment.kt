@@ -7,13 +7,13 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import io.github.karadkar.sample.R
 import io.github.karadkar.sample.databinding.FragLoginBinding
+import org.koin.android.viewmodel.ext.android.sharedViewModel
 
 class LoginFragment : Fragment() {
     private lateinit var binding: FragLoginBinding
-    private lateinit var viewMode: LoginViewModel
+    private val viewMode: LoginViewModel by sharedViewModel()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = DataBindingUtil.inflate(
@@ -26,8 +26,6 @@ class LoginFragment : Fragment() {
     // fixme: retain edit-text values when dark theme is applied
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-
-        viewMode = ViewModelProviders.of(requireActivity())[LoginViewModel::class.java]
 
         binding.apply {
             switchTheme.setOnCheckedChangeListener { _, isChecked ->

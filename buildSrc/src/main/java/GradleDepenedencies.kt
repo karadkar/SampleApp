@@ -8,6 +8,7 @@ object Versions {
     const val roomDb = "2.2.3"
     const val realmDbGradlePlugin = "5.12.0"
     const val kotlin = "1.3.50"
+    const val koinVersion = "2.1.6"
 }
 
 object Libraries {
@@ -39,6 +40,9 @@ object Libraries {
     const val kaptRealmFieldHelper = "dk.ilios:realmfieldnameshelper:1.1.1"
     const val kaptDatabindingCompiler = "com.android.databinding:compiler:${Versions.gradlePlugin}"
 
+    const val koinViewModel = "org.koin:koin-android-viewmodel:${Versions.koinVersion}"
+
+    //region Testing dependencies
     const val junit = "junit:junit:4.12"
     const val testRunner = "androidx.test:runner:1.2.0"
     const val espressoCore = "androidx.test.espresso:espresso-core:3.2.0"
@@ -47,4 +51,5 @@ object Libraries {
 
     // use same version as lifecycle to  avoid issue https://stackoverflow.com/q/55336613/2804351
     const val coreTesting = "androidx.arch.core:core-testing:${Versions.archExtensions}"
+    //endregion
 }
