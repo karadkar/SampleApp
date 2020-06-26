@@ -49,5 +49,9 @@ dependencies {
     implementation Libraries.rxJava2
     implementation Libraries.rxAndroid2
 
+    implementation Libraries.retrofit
+    implementation Libraries.retrofitRxJava2Adapter
+    implementation Libraries.retrofitJacksonConverter
+
     implementation Libraries.koinViewModel
 }
