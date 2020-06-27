@@ -63,66 +63,76 @@ class LoginViewModel(private val repo: LoginRepository) : ViewModel() {
                 is LoginEventResult.EnableDarkThemeResult -> {
                     state.copy(enableDarkTheme = result.enable)
                 }
-                is LoginEventResult.LoginResult.Success -> {
+                is LoginEventResult.Success -> {
                     state.copy(
                         userNameError = null,
                         passwordError = null,
                         loginApiError = null,
-                        enableLoginButton = true
+                        enableLoginButton = true,
+                        loading = false
                     )
                 }
-                is LoginEventResult.LoginResult.PassowrdValidationError -> {
+                is LoginEventResult.PasswordValidationError -> {
                     state.copy(
                         userNameError = null,
                         passwordError = result.passwordError,
                         loginApiError = null,
-                        enableLoginButton = false
+                        enableLoginButton = false,
+                        loading = false
                     )
                 }
-                is LoginEventResult.LoginResult.EmailValidationError -> {
+                is LoginEventResult.EmailValidationError -> {
                     state.copy(
                         userNameError = result.userNameError,
                         passwordError = null,
                         loginApiError = null,
-                        enableLoginButton = false
+                        enableLoginButton = false,
+                        loading = false
                     )
                 }
+                is LoginEventResult.Loading -> state.copy(loading = true)
                 else -> error("Event Result $result not handled")
             }
         }.distinctUntilChanged()
     }
 
-    fun Observable<LoginEvent.OnClickLoginEvent>.loginEventToResult(): Observable<LoginEventResult.LoginResult> {
-        return this.map { event ->
-
-            if (!repo.isValidEmailId(event.username)) {
-                return@map LoginEventResult.LoginResult.EmailValidationError(R.string.error_invalid_email)
+    fun Observable<LoginEvent.OnClickLoginEvent>.loginEventToResult(): Observable<LoginEventResult> {
+        return this.switchMap { event ->
+            val error = checkValidationError(event)
+            if (error != null) {
+                return@switchMap Observable.just(error)
             }
 
-            if (event.password.length < 8 || event.password.length > 16) {
-                return@map LoginEventResult.LoginResult.PassowrdValidationError(R.string.error_password_length)
-            }
+            return@switchMap repo.login(event.username, event.password)
+                .map {
+                    LoginEventResult.Success(it.token) as LoginEventResult
+                }
+                .onErrorReturn { t ->
+                    logError("error login $event", t = t)
+                    LoginEventResult.ApiError(t.message ?: "api error")
+                }.toObservable()
+                .startWith(LoginEventResult.Loading)
+        }
+    }
 
-            if (!event.password.containsAtleastOne { Character.isUpperCase(it) }) {
-                return@map LoginEventResult.LoginResult.PassowrdValidationError(R.string.error_password_need_uppercase)
-            }
-
-            if (!event.password.containsAtleastOne { Character.isLowerCase(it) }) {
-                return@map LoginEventResult.LoginResult.PassowrdValidationError(R.string.error_password_need_lowercase)
-            }
-
-            if (!event.password.containsAtleastOne { Character.isDigit(it) }) {
-                return@map LoginEventResult.LoginResult.PassowrdValidationError(R.string.error_password_need_digit)
-            }
-
-            // special char
-            if (!event.password.containsAtleastOne {
-                    !Character.isSpaceChar(it) && !Character.isDigit(it) && !Character.isLetter(it)
-                }) {
-                return@map LoginEventResult.LoginResult.PassowrdValidationError(R.string.error_password_need_special_char)
-            }
-
-            return@map LoginEventResult.LoginResult.Success(token = "some token")
+    // todo: improve readability
+    private fun checkValidationError(event: LoginEvent.OnClickLoginEvent): LoginEventResult? {
+        return if (!repo.isValidEmailId(event.username)) {
+            LoginEventResult.EmailValidationError(R.string.error_invalid_email)
+        } else if (event.password.length < 8 || event.password.length > 16) {
+            LoginEventResult.PasswordValidationError(R.string.error_password_length)
+        } else if (!event.password.containsAtleastOne { Character.isUpperCase(it) }) {
+            LoginEventResult.PasswordValidationError(R.string.error_password_need_uppercase)
+        } else if (!event.password.containsAtleastOne { Character.isLowerCase(it) }) {
+            LoginEventResult.PasswordValidationError(R.string.error_password_need_lowercase)
+        } else if (!event.password.containsAtleastOne { Character.isDigit(it) }) {
+            LoginEventResult.PasswordValidationError(R.string.error_password_need_digit)
+        } else if (!event.password.containsAtleastOne {
+                !Character.isSpaceChar(it) && !Character.isDigit(it) && !Character.isLetter(it)
+            }) {
+            LoginEventResult.PasswordValidationError(R.string.error_password_need_special_char)
+        } else {
+            null
         }
     }
 

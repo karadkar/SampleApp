@@ -5,10 +5,12 @@ import com.google.common.truth.Truth.assertThat
 import io.github.karadkar.sample.R
 import io.github.karadkar.sample.login.models.LoginEvent
 import io.github.karadkar.sample.login.repository.LoginRepository
+import io.github.karadkar.sample.login.repository.LoginResponse
 import io.github.karadkar.sample.utils.getOrAwaitValue
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.unmockkAll
+import io.reactivex.Single
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -129,11 +131,18 @@ class LoginViewModelTest {
 
     @Test
     fun `valid email and password`() {
+        val apiResponse = LoginResponse.Success()
+        apiResponse.token = "random-token"
+
+        every { mockRepo.login(validEmail, validPassword) } returns Single.just(apiResponse)
         vm.submitEvent(LoginEvent.OnClickLoginEvent(username = validEmail, password = validPassword))
         vm.viewState.getOrAwaitValue().apply {
             assertThat(userNameError).isNull()
             assertThat(passwordError).isNull()
             assertThat(enableLoginButton).isTrue()
+            assertThat(loading).isFalse()
         }
+
+        // todo: add test for visible progress-bar state
     }
 }

@@ -9,14 +9,12 @@ sealed class LoginEvent {
 sealed class LoginEventResult {
     object ScreenLoadResult : LoginEventResult()
 
-    sealed class LoginResult : LoginEventResult() {
-        data class Success(val token: String) : LoginResult()
+    object Loading : LoginEventResult()
+    data class Success(val token: String) : LoginEventResult()
+    data class ApiError(val message: String) : LoginEventResult()
 
-        abstract class Error : LoginResult()
-        data class ApiError(val message: String) : Error()
-        data class EmailValidationError(val userNameError: Int) : Error()
-        data class PassowrdValidationError(val passwordError: Int) : Error()
-    }
+    data class EmailValidationError(val userNameError: Int) : LoginEventResult()
+    data class PasswordValidationError(val passwordError: Int) : LoginEventResult()
 
     data class EnableDarkThemeResult(val enable: Boolean) : LoginEventResult()
 }
