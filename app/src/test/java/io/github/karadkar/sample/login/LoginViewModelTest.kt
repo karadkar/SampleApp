@@ -15,6 +15,7 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import java.util.concurrent.TimeoutException
 
 class LoginViewModelTest {
 
@@ -144,5 +145,17 @@ class LoginViewModelTest {
         }
 
         // todo: add test for visible progress-bar state
+    }
+
+    @Test
+    fun `login api error`() {
+        every { mockRepo.login(validEmail, validPassword) } returns Single.error(TimeoutException())
+        vm.submitEvent(LoginEvent.OnClickLoginEvent(username = validEmail, password = validPassword))
+        vm.viewState.getOrAwaitValue().apply {
+            assertThat(userNameError).isNull()
+            assertThat(passwordError).isNull()
+            assertThat(enableLoginButton).isFalse()
+            assertThat(loading).isFalse()
+        }
     }
 }

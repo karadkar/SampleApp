@@ -91,6 +91,15 @@ class LoginViewModel(private val repo: LoginRepository) : ViewModel() {
                     )
                 }
                 is LoginEventResult.Loading -> state.copy(loading = true)
+                is LoginEventResult.ApiError -> {
+                    state.copy(
+                        userNameError = null,
+                        passwordError = null,
+                        loginApiError = null,
+                        enableLoginButton = false,
+                        loading = false
+                    )
+                }
                 else -> error("Event Result $result not handled")
             }
         }.distinctUntilChanged()
