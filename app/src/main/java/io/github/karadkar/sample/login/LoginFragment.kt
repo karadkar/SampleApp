@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import android.widget.CompoundButton
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import io.github.karadkar.sample.R
 import io.github.karadkar.sample.databinding.FragLoginBinding
 import org.koin.android.viewmodel.ext.android.sharedViewModel
@@ -29,10 +28,10 @@ class LoginFragment : Fragment(), View.OnClickListener, CompoundButton.OnChecked
         super.onActivityCreated(savedInstanceState)
 
         binding.apply {
-            // preserves checked state. as on applying dark theme, fragments are recreated
-            viewMode.isNightMode().observe(requireActivity(), Observer {
-                switchTheme.isChecked = it
-            })
+            //            // preserves checked state. as on applying dark theme, fragments are recreated
+//            viewMode.isNightMode().observe(requireActivity(), Observer {
+//                switchTheme.isChecked = it
+//            })
             btnLogin.setOnClickListener(this@LoginFragment)
             switchTheme.setOnCheckedChangeListener(this@LoginFragment)
         }
