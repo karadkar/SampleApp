@@ -50,6 +50,7 @@ class LoginViewModel(private val repo: LoginRepository) : ViewModel() {
                 obj.ofType(LoginEvent.EnableDarkThemeEvent::class.java).map {
                     return@map LoginEventResult.EnableDarkThemeResult(enable = it.enable)
                 },
+                obj.ofType(LoginEvent.ValidationCheckEvent::class.java).validationEventToResult(),
                 obj.ofType(LoginEvent.OnClickLoginEvent::class.java).loginEventToResult()
             )
         }
@@ -63,7 +64,16 @@ class LoginViewModel(private val repo: LoginRepository) : ViewModel() {
                 is LoginEventResult.EnableDarkThemeResult -> {
                     state.copy(enableDarkTheme = result.enable)
                 }
-                is LoginEventResult.Success -> {
+                is LoginEventResult.ValidationSuccess -> {
+                    state.copy(
+                        userNameError = null,
+                        passwordError = null,
+                        loginApiError = null,
+                        enableLoginButton = true,
+                        loading = false
+                    )
+                }
+                is LoginEventResult.ApiSuccess -> {
                     state.copy(
                         userNameError = null,
                         passwordError = null,
@@ -90,7 +100,7 @@ class LoginViewModel(private val repo: LoginRepository) : ViewModel() {
                         loading = false
                     )
                 }
-                is LoginEventResult.Loading -> state.copy(loading = true)
+                is LoginEventResult.ApiLoading -> state.copy(loading = true)
                 is LoginEventResult.ApiError -> {
                     state.copy(
                         userNameError = null,
@@ -105,27 +115,32 @@ class LoginViewModel(private val repo: LoginRepository) : ViewModel() {
         }.distinctUntilChanged()
     }
 
-    fun Observable<LoginEvent.OnClickLoginEvent>.loginEventToResult(): Observable<LoginEventResult> {
-        return this.switchMap { event ->
+    private fun Observable<LoginEvent.ValidationCheckEvent>.validationEventToResult(): Observable<LoginEventResult> {
+        return this.map { event ->
             val error = checkValidationError(event)
             if (error != null) {
-                return@switchMap Observable.just(error)
+                return@map error
             }
+            return@map LoginEventResult.ValidationSuccess
+        }
+    }
 
+    private fun Observable<LoginEvent.OnClickLoginEvent>.loginEventToResult(): Observable<LoginEventResult> {
+        return this.switchMap { event ->
             return@switchMap repo.login(event.username, event.password)
                 .map {
-                    LoginEventResult.Success(it.token) as LoginEventResult
+                    LoginEventResult.ApiSuccess(it.token) as LoginEventResult
                 }
                 .onErrorReturn { t ->
                     logError("error login $event", t = t)
                     LoginEventResult.ApiError(t.message ?: "api error")
                 }.toObservable()
-                .startWith(LoginEventResult.Loading)
+                .startWith(LoginEventResult.ApiLoading)
         }
     }
 
     // todo: improve readability
-    private fun checkValidationError(event: LoginEvent.OnClickLoginEvent): LoginEventResult? {
+    private fun checkValidationError(event: LoginEvent.ValidationCheckEvent): LoginEventResult? {
         return if (!repo.isValidEmailId(event.username)) {
             LoginEventResult.EmailValidationError(R.string.error_invalid_email)
         } else if (event.password.length < 8 || event.password.length > 16) {

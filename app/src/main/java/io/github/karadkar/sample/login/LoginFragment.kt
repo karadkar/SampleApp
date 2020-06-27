@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.CompoundButton
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import io.github.karadkar.sample.R
 import io.github.karadkar.sample.databinding.FragLoginBinding
 import io.github.karadkar.sample.login.models.LoginEvent
@@ -27,7 +28,7 @@ class LoginFragment : Fragment(), View.OnClickListener, CompoundButton.OnChecked
     // fixme: retain edit-text values when dark theme is applied
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-
+        renderViewState()
         binding.apply {
             // preserves checked state. as on applying dark theme, fragments are recreated
 //            viewMode.isNightMode().observe(requireActivity(), Observer {
@@ -37,6 +38,24 @@ class LoginFragment : Fragment(), View.OnClickListener, CompoundButton.OnChecked
             switchTheme.setOnCheckedChangeListener(this@LoginFragment)
         }
         viewMode.submitEvent(LoginEvent.ScreenLoadEvent)
+    }
+
+    private fun renderViewState() {
+        viewMode.viewState.observe(requireActivity(), Observer { state ->
+            if (state != null) {
+                binding.apply {
+                    btnLogin.isEnabled = state.enableLoginButton
+
+                    if (state.userNameError != null) {
+                        tiUserName.error = getString(state.userNameError)
+                    }
+
+                    if (state.passwordError != null) {
+                        tiPassword.error = getString(state.passwordError)
+                    }
+                }
+            }
+        })
     }
 
     override fun onClick(v: View?) {
