@@ -3,7 +3,8 @@ package io.github.karadkar.sample.login.models
 sealed class LoginEvent {
     object ScreenLoadEvent : LoginEvent()
     data class OnClickLoginEvent(val username: String, val password: String) : LoginEvent()
-    data class ValidationCheckEvent(val username: String, val password: String) : LoginEvent()
+    data class UserNameValidationCheckEvent(val username: String) : LoginEvent()
+    data class PasswordValidationCheckEvent(val password: String) : LoginEvent()
     data class EnableDarkThemeEvent(val enable: Boolean) : LoginEvent()
 }
 
@@ -17,7 +18,8 @@ sealed class LoginEventResult {
     data class EmailValidationError(val userNameError: Int) : LoginEventResult()
     data class PasswordValidationError(val passwordError: Int) : LoginEventResult()
 
-    object ValidationSuccess : LoginEventResult()
+    object UserNameValidationSuccess : LoginEventResult()
+    object PasswordValidationSuccess : LoginEventResult()
     data class EnableDarkThemeResult(val enable: Boolean) : LoginEventResult()
 }
 
@@ -28,8 +30,12 @@ data class LoginUiState(
     val loginApiError: String? = null,
     val enableDarkTheme: Boolean = false,
     val loading: Boolean = false,
-    val enableLoginButton: Boolean = false
-)
+    val enableLoginButton: Boolean = false,
+    val isUserNameValid: Boolean = false,
+    val isPasswordValid: Boolean = false
+) {
+    fun enableLoginButton(): Boolean = isUserNameValid && isPasswordValid
+}
 
 // one shot ui state
 sealed class LoginUiEffects {

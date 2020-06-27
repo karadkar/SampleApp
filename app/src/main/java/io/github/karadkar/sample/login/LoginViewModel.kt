@@ -11,8 +11,10 @@ import io.github.karadkar.sample.login.models.LoginUiState
 import io.github.karadkar.sample.login.repository.LoginRepository
 import io.github.karadkar.sample.utils.*
 import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.subjects.PublishSubject
+import java.util.concurrent.TimeUnit
 
 class LoginViewModel(private val repo: LoginRepository) : ViewModel() {
     private val disposable = CompositeDisposable()
@@ -33,6 +35,7 @@ class LoginViewModel(private val repo: LoginRepository) : ViewModel() {
                     .doOnNext { logInfo("result $it") }
                     .resultToViewState()
                     .doOnNext { logInfo("state $it") }
+                    .observeOn(AndroidSchedulers.mainThread())
                     .subscribe({
                         viewState.value = it
                     }, {
@@ -43,16 +46,18 @@ class LoginViewModel(private val repo: LoginRepository) : ViewModel() {
 
     private fun Observable<LoginEvent>.eventToResult(): Observable<LoginEventResult> {
         return this.publish { obj ->
-            Observable.merge(
+            val sources = listOf(
                 obj.ofType(LoginEvent.ScreenLoadEvent::class.java).map {
                     return@map LoginEventResult.ScreenLoadResult
                 },
                 obj.ofType(LoginEvent.EnableDarkThemeEvent::class.java).map {
                     return@map LoginEventResult.EnableDarkThemeResult(enable = it.enable)
                 },
-                obj.ofType(LoginEvent.ValidationCheckEvent::class.java).validationEventToResult(),
+                obj.ofType(LoginEvent.UserNameValidationCheckEvent::class.java).userNameValidationEventToResult(),
+                obj.ofType(LoginEvent.PasswordValidationCheckEvent::class.java).passwordValidationEventToResult(),
                 obj.ofType(LoginEvent.OnClickLoginEvent::class.java).loginEventToResult()
             )
+            return@publish Observable.merge(sources)
         }
     }
 
@@ -64,49 +69,40 @@ class LoginViewModel(private val repo: LoginRepository) : ViewModel() {
                 is LoginEventResult.EnableDarkThemeResult -> {
                     state.copy(enableDarkTheme = result.enable)
                 }
-                is LoginEventResult.ValidationSuccess -> {
+                is LoginEventResult.UserNameValidationSuccess -> {
                     state.copy(
                         userNameError = null,
+                        isUserNameValid = true
+                    )
+                }
+                is LoginEventResult.PasswordValidationSuccess -> {
+                    state.copy(
                         passwordError = null,
-                        loginApiError = null,
-                        enableLoginButton = true,
-                        loading = false
+                        isPasswordValid = true
                     )
                 }
                 is LoginEventResult.ApiSuccess -> {
                     state.copy(
-                        userNameError = null,
-                        passwordError = null,
                         loginApiError = null,
-                        enableLoginButton = true,
                         loading = false
                     )
                 }
                 is LoginEventResult.PasswordValidationError -> {
                     state.copy(
-                        userNameError = null,
                         passwordError = result.passwordError,
-                        loginApiError = null,
-                        enableLoginButton = false,
-                        loading = false
+                        isPasswordValid = false
                     )
                 }
                 is LoginEventResult.EmailValidationError -> {
                     state.copy(
                         userNameError = result.userNameError,
-                        passwordError = null,
-                        loginApiError = null,
-                        enableLoginButton = false,
-                        loading = false
+                        isUserNameValid = false
                     )
                 }
                 is LoginEventResult.ApiLoading -> state.copy(loading = true)
                 is LoginEventResult.ApiError -> {
                     state.copy(
-                        userNameError = null,
-                        passwordError = null,
-                        loginApiError = null,
-                        enableLoginButton = false,
+                        loginApiError = result.message,
                         loading = false
                     )
                 }
@@ -115,13 +111,23 @@ class LoginViewModel(private val repo: LoginRepository) : ViewModel() {
         }.distinctUntilChanged()
     }
 
-    private fun Observable<LoginEvent.ValidationCheckEvent>.validationEventToResult(): Observable<LoginEventResult> {
-        return this.map { event ->
-            val error = checkValidationError(event)
+    private fun Observable<LoginEvent.UserNameValidationCheckEvent>.userNameValidationEventToResult(): Observable<LoginEventResult> {
+        return this.debounce(500L, TimeUnit.MILLISECONDS).map { event ->
+            return@map if (!repo.isValidEmailId(event.username)) {
+                LoginEventResult.EmailValidationError(R.string.error_invalid_email)
+            } else {
+                LoginEventResult.UserNameValidationSuccess
+            }
+        }
+    }
+
+    private fun Observable<LoginEvent.PasswordValidationCheckEvent>.passwordValidationEventToResult(): Observable<LoginEventResult> {
+        return this.debounce(500L, TimeUnit.MILLISECONDS).map { event ->
+            val error = checkForPasswordValidation(event)
             if (error != null) {
                 return@map error
             }
-            return@map LoginEventResult.ValidationSuccess
+            return@map LoginEventResult.PasswordValidationSuccess
         }
     }
 
@@ -140,10 +146,8 @@ class LoginViewModel(private val repo: LoginRepository) : ViewModel() {
     }
 
     // todo: improve readability
-    private fun checkValidationError(event: LoginEvent.ValidationCheckEvent): LoginEventResult? {
-        return if (!repo.isValidEmailId(event.username)) {
-            LoginEventResult.EmailValidationError(R.string.error_invalid_email)
-        } else if (event.password.length < 8 || event.password.length > 16) {
+    private fun checkForPasswordValidation(event: LoginEvent.PasswordValidationCheckEvent): LoginEventResult? {
+        return if (event.password.length < 8 || event.password.length > 16) {
             LoginEventResult.PasswordValidationError(R.string.error_password_length)
         } else if (!event.password.containsAtleastOne { Character.isUpperCase(it) }) {
             LoginEventResult.PasswordValidationError(R.string.error_password_need_uppercase)

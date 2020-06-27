@@ -62,32 +62,32 @@ class LoginViewModelTest {
         val email = "rohit.karadkar@gmail.com"
         every { mockRepo.isValidEmailId(email) } returns false
 
-        vm.submitEvent(LoginEvent.ValidationCheckEvent(username = email, password = ""))
+        vm.submitEvent(LoginEvent.UserNameValidationCheckEvent(username = email))
         vm.viewState.getOrAwaitValue().apply {
             assertThat(userNameError).isEqualTo(R.string.error_invalid_email)
-            assertThat(enableLoginButton).isFalse()
+            assertThat(isUserNameValid).isFalse()
         }
 
         every { mockRepo.isValidEmailId(email) } returns true
-        vm.submitEvent(LoginEvent.ValidationCheckEvent(username = email, password = ""))
+        vm.submitEvent(LoginEvent.UserNameValidationCheckEvent(username = email))
         vm.viewState.getOrAwaitValue().apply {
             assertThat(userNameError).isNull()
-            assertThat(enableLoginButton).isFalse()
+            assertThat(isUserNameValid).isTrue()
         }
     }
 
     @Test
     fun `password length needs to be between 8-16 char`() {
-        vm.submitEvent(LoginEvent.ValidationCheckEvent(username = validEmail, password = "rohit"))
+        vm.submitEvent(LoginEvent.PasswordValidationCheckEvent(password = "rohit"))
         vm.viewState.getOrAwaitValue().apply {
             assertThat(passwordError).isEqualTo(R.string.error_password_length)
-            assertThat(enableLoginButton).isFalse()
+            assertThat(isPasswordValid).isFalse()
         }
 
-        vm.submitEvent(LoginEvent.ValidationCheckEvent(username = validEmail, password = "rohit-karadkar-1239"))
+        vm.submitEvent(LoginEvent.PasswordValidationCheckEvent(password = "rohit-karadkar-1239"))
         vm.viewState.getOrAwaitValue().apply {
             assertThat(passwordError).isEqualTo(R.string.error_password_length)
-            assertThat(enableLoginButton).isFalse()
+            assertThat(isPasswordValid).isFalse()
         }
 
 
@@ -95,37 +95,37 @@ class LoginViewModelTest {
 
     @Test
     fun `password needs 1 uppercase`() {
-        vm.submitEvent(LoginEvent.ValidationCheckEvent(username = validEmail, password = "rohit@2020"))
+        vm.submitEvent(LoginEvent.PasswordValidationCheckEvent(password = "rohit@2020"))
         vm.viewState.getOrAwaitValue().apply {
             assertThat(passwordError).isEqualTo(R.string.error_password_need_uppercase)
-            assertThat(enableLoginButton).isFalse()
+            assertThat(isPasswordValid).isFalse()
         }
     }
 
     @Test
     fun `password needs 1 lowercase`() {
-        vm.submitEvent(LoginEvent.ValidationCheckEvent(username = validEmail, password = "ROHIT@2020"))
+        vm.submitEvent(LoginEvent.PasswordValidationCheckEvent(password = "ROHIT@2020"))
         vm.viewState.getOrAwaitValue().apply {
             assertThat(passwordError).isEqualTo(R.string.error_password_need_lowercase)
-            assertThat(enableLoginButton).isFalse()
+            assertThat(isPasswordValid).isFalse()
         }
     }
 
     @Test
     fun `password needs 1 digit`() {
-        vm.submitEvent(LoginEvent.ValidationCheckEvent(username = validEmail, password = "Rohit@twent"))
+        vm.submitEvent(LoginEvent.PasswordValidationCheckEvent(password = "Rohit@twent"))
         vm.viewState.getOrAwaitValue().apply {
             assertThat(passwordError).isEqualTo(R.string.error_password_need_digit)
-            assertThat(enableLoginButton).isFalse()
+            assertThat(isPasswordValid).isFalse()
         }
     }
 
     @Test
     fun `password needs 1 special char`() {
-        vm.submitEvent(LoginEvent.ValidationCheckEvent(username = validEmail, password = "Rohit2020"))
+        vm.submitEvent(LoginEvent.PasswordValidationCheckEvent(password = "Rohit2020"))
         vm.viewState.getOrAwaitValue().apply {
             assertThat(passwordError).isEqualTo(R.string.error_password_need_special_char)
-            assertThat(enableLoginButton).isFalse()
+            assertThat(isPasswordValid).isFalse()
         }
     }
 
@@ -140,7 +140,7 @@ class LoginViewModelTest {
         vm.viewState.getOrAwaitValue().apply {
             assertThat(userNameError).isNull()
             assertThat(passwordError).isNull()
-            assertThat(enableLoginButton).isTrue()
+            assertThat(enableLoginButton()).isTrue()
             assertThat(loading).isFalse()
         }
 
@@ -154,7 +154,8 @@ class LoginViewModelTest {
         vm.viewState.getOrAwaitValue().apply {
             assertThat(userNameError).isNull()
             assertThat(passwordError).isNull()
-            assertThat(enableLoginButton).isFalse()
+            assertThat(loginApiError).isNotEmpty()
+            assertThat(enableLoginButton()).isTrue() // user should be able to re-try
             assertThat(loading).isFalse()
         }
     }

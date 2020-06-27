@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CompoundButton
+import androidx.core.widget.addTextChangedListener
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -30,28 +31,40 @@ class LoginFragment : Fragment(), View.OnClickListener, CompoundButton.OnChecked
         super.onActivityCreated(savedInstanceState)
         renderViewState()
         binding.apply {
-            // preserves checked state. as on applying dark theme, fragments are recreated
-//            viewMode.isNightMode().observe(requireActivity(), Observer {
-//                switchTheme.isChecked = it
-//            })
+            // fixme: preserves checked state. as on applying dark theme, fragments are recreated
             btnLogin.setOnClickListener(this@LoginFragment)
             switchTheme.setOnCheckedChangeListener(this@LoginFragment)
+            etUserName.addTextChangedListener(afterTextChanged = {
+                viewMode.submitEvent(
+                    LoginEvent.UserNameValidationCheckEvent(username = it.toString())
+                )
+            })
+
+            etPassword.addTextChangedListener(afterTextChanged = {
+                viewMode.submitEvent(
+                    LoginEvent.PasswordValidationCheckEvent(password = it.toString())
+                )
+            })
         }
         viewMode.submitEvent(LoginEvent.ScreenLoadEvent)
     }
-
     private fun renderViewState() {
         viewMode.viewState.observe(requireActivity(), Observer { state ->
             if (state != null) {
                 binding.apply {
-                    btnLogin.isEnabled = state.enableLoginButton
+                    btnLogin.isEnabled = state.enableLoginButton()
 
                     if (state.userNameError != null) {
                         tiUserName.error = getString(state.userNameError)
+                    } else {
+                        tiUserName.error = null
                     }
 
                     if (state.passwordError != null) {
                         tiPassword.error = getString(state.passwordError)
+                        tiPassword.errorIconDrawable = null
+                    } else {
+                        tiPassword.error = null
                     }
                 }
             }
@@ -60,7 +73,12 @@ class LoginFragment : Fragment(), View.OnClickListener, CompoundButton.OnChecked
 
     override fun onClick(v: View?) {
         if (v?.id == R.id.btn_login) {
-            viewMode.login()
+            viewMode.submitEvent(
+                LoginEvent.OnClickLoginEvent(
+                    username = binding.etUserName.text.toString(),
+                    password = binding.etPassword.text.toString()
+                )
+            )
         }
     }
 
