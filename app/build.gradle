@@ -38,6 +38,8 @@ dependencies {
 
     testImplementation Libraries.junit
     testImplementation Libraries.truthAssersions
+    testImplementation Libraries.mockk
+    testImplementation Libraries.coreTesting
 
     androidTestImplementation Libraries.testRunner
     androidTestImplementation Libraries.espressoCore
