@@ -11,10 +11,11 @@ sealed class LoginEventResult {
 
     sealed class LoginResult : LoginEventResult() {
         data class Success(val token: String) : LoginResult()
-        abstract class Error(open val message: String) : LoginResult()
-        data class ApiError(override val message: String) : Error(message)
-        data class UserNameError(override val message: String) : Error(message)
-        data class PasswordError(override val message: String) : Error(message)
+
+        abstract class Error : LoginResult()
+        data class ApiError(val message: String) : Error()
+        data class EmailValidationError(val userNameError: Int) : Error()
+        data class PassowrdValidationError(val passwordError: Int) : Error()
     }
 
     data class EnableDarkThemeResult(val enable: Boolean) : LoginEventResult()
@@ -22,11 +23,12 @@ sealed class LoginEventResult {
 
 // persistable ui states
 data class LoginUiState(
-    val userNameError: String? = null,
-    val passwordError: String? = null,
+    val userNameError: Int? = null,
+    val passwordError: Int? = null,
     val loginApiError: String? = null,
     val enableDarkTheme: Boolean = false,
-    val loading: Boolean = false
+    val loading: Boolean = false,
+    val enableLoginButton: Boolean = false
 )
 
 // one shot ui state

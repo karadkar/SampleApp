@@ -1,5 +1,6 @@
 package io.github.karadkar.sample.login.repository
 
+import android.util.Patterns
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -36,4 +37,6 @@ class LoginRepository(val apiService: LoginApiService, val objectMapper: ObjectM
     fun isNightMode(): LiveData<Boolean> = Transformations.map(nightMode) { value: Int ->
         return@map (value == AppCompatDelegate.MODE_NIGHT_YES)
     }
+
+    fun isValidEmailId(email: String) = Patterns.EMAIL_ADDRESS.matcher(email).matches()
 }

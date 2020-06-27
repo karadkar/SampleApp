@@ -4,4 +4,11 @@
     <string name="hint_username">Username</string>
     <string name="hint_password">password</string>
     <string name="action_login">Login</string>
+
+    <string name="error_invalid_email">Invalid Email Id</string>
+    <string name="error_password_length">Password should be 8–16 chars of length</string>
+    <string name="error_password_need_uppercase">Password must contain at least 1 uppercase</string>
+    <string name="error_password_need_lowercase">Password must contain at least 1 lowercase</string>
+    <string name="error_password_need_digit">Password must contain at least 1 digit</string>
+    <string name="error_password_need_special_char">Password must contain at least 1 special character</string>
 </resources>
