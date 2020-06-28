@@ -31,8 +31,8 @@ data class LoginUiState(
     val enableDarkTheme: Boolean = false,
     val loading: Boolean = false,
     val enableLoginButton: Boolean = false,
-    val isUserNameValid: Boolean = false,
-    val isPasswordValid: Boolean = false
+    val isUserNameValid: Boolean = true,
+    val isPasswordValid: Boolean = true
 ) {
     fun enableLoginButton(): Boolean = isUserNameValid && isPasswordValid
 }

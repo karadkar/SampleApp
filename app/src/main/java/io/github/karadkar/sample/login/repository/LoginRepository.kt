@@ -6,11 +6,14 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import com.fasterxml.jackson.databind.ObjectMapper
+import io.github.karadkar.sample.utils.AppRxSchedulers
 import io.reactivex.Single
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
 
-class LoginRepository(val apiService: LoginApiService, val objectMapper: ObjectMapper) {
+class LoginRepository(
+    val apiService: LoginApiService,
+    val schedulers: AppRxSchedulers,
+    val objectMapper: ObjectMapper
+) {
 
     val nightMode = MutableLiveData<Int>()
 
@@ -25,8 +28,8 @@ class LoginRepository(val apiService: LoginApiService, val objectMapper: ObjectM
         }
 
         return apiService.login(request)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeOn(schedulers.io())
+            .observeOn(schedulers.main())
     }
 
     fun setNightMode(yes: Boolean) {

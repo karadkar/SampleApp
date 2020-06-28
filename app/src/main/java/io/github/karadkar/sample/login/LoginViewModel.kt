@@ -11,12 +11,16 @@ import io.github.karadkar.sample.login.models.LoginUiState
 import io.github.karadkar.sample.login.repository.LoginRepository
 import io.github.karadkar.sample.utils.*
 import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.subjects.PublishSubject
+import retrofit2.HttpException
 import java.util.concurrent.TimeUnit
 
-class LoginViewModel(private val repo: LoginRepository) : ViewModel() {
+class LoginViewModel(
+    private val repo: LoginRepository,
+    private val schedulers: AppRxSchedulers,
+    private val debounceTimeMillis: Long = 500L
+) : ViewModel() {
     private val disposable = CompositeDisposable()
 
     private val viewEventEmitter = PublishSubject.create<LoginEvent>()
@@ -35,7 +39,7 @@ class LoginViewModel(private val repo: LoginRepository) : ViewModel() {
                     .doOnNext { logInfo("result $it") }
                     .resultToViewState()
                     .doOnNext { logInfo("state $it") }
-                    .observeOn(AndroidSchedulers.mainThread())
+                    .observeOn(schedulers.main())
                     .subscribe({
                         viewState.value = it
                     }, {
@@ -112,7 +116,7 @@ class LoginViewModel(private val repo: LoginRepository) : ViewModel() {
     }
 
     private fun Observable<LoginEvent.UserNameValidationCheckEvent>.userNameValidationEventToResult(): Observable<LoginEventResult> {
-        return this.debounce(500L, TimeUnit.MILLISECONDS).map { event ->
+        return this.debounce(debounceTimeMillis, TimeUnit.MILLISECONDS, schedulers.computation()).map { event ->
             return@map if (!repo.isValidEmailId(event.username)) {
                 LoginEventResult.EmailValidationError(R.string.error_invalid_email)
             } else {
@@ -122,7 +126,7 @@ class LoginViewModel(private val repo: LoginRepository) : ViewModel() {
     }
 
     private fun Observable<LoginEvent.PasswordValidationCheckEvent>.passwordValidationEventToResult(): Observable<LoginEventResult> {
-        return this.debounce(500L, TimeUnit.MILLISECONDS).map { event ->
+        return this.debounce(debounceTimeMillis, TimeUnit.MILLISECONDS, schedulers.computation()).map { event ->
             val error = checkForPasswordValidation(event)
             if (error != null) {
                 return@map error
@@ -135,11 +139,16 @@ class LoginViewModel(private val repo: LoginRepository) : ViewModel() {
         return this.switchMap { event ->
             return@switchMap repo.login(event.username, event.password)
                 .map {
-                    LoginEventResult.ApiSuccess(it.token) as LoginEventResult
+                    return@map LoginEventResult.ApiSuccess(it.token) as LoginEventResult
                 }
                 .onErrorReturn { t ->
                     logError("error login $event", t = t)
-                    LoginEventResult.ApiError(t.message ?: "api error")
+                    val message = if (t is HttpException && t.code() == 401) {
+                        "Invalid Credentials"
+                    } else {
+                        t.message ?: "api error"
+                    }
+                    return@onErrorReturn LoginEventResult.ApiError(message)
                 }.toObservable()
                 .startWith(LoginEventResult.ApiLoading)
         }
@@ -147,9 +156,7 @@ class LoginViewModel(private val repo: LoginRepository) : ViewModel() {
 
     // todo: improve readability
     private fun checkForPasswordValidation(event: LoginEvent.PasswordValidationCheckEvent): LoginEventResult? {
-        return if (event.password.length < 8 || event.password.length > 16) {
-            LoginEventResult.PasswordValidationError(R.string.error_password_length)
-        } else if (!event.password.containsAtleastOne { Character.isUpperCase(it) }) {
+        return if (!event.password.containsAtleastOne { Character.isUpperCase(it) }) {
             LoginEventResult.PasswordValidationError(R.string.error_password_need_uppercase)
         } else if (!event.password.containsAtleastOne { Character.isLowerCase(it) }) {
             LoginEventResult.PasswordValidationError(R.string.error_password_need_lowercase)
@@ -159,6 +166,8 @@ class LoginViewModel(private val repo: LoginRepository) : ViewModel() {
                 !Character.isSpaceChar(it) && !Character.isDigit(it) && !Character.isLetter(it)
             }) {
             LoginEventResult.PasswordValidationError(R.string.error_password_need_special_char)
+        } else if (event.password.length < 8 || event.password.length > 16) {
+            LoginEventResult.PasswordValidationError(R.string.error_password_length)
         } else {
             null
         }

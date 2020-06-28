@@ -6,6 +6,7 @@ import io.github.karadkar.sample.R
 import io.github.karadkar.sample.login.models.LoginEvent
 import io.github.karadkar.sample.login.repository.LoginRepository
 import io.github.karadkar.sample.login.repository.LoginResponse
+import io.github.karadkar.sample.utils.TestRxSchedulersProvider
 import io.github.karadkar.sample.utils.getOrAwaitValue
 import io.mockk.every
 import io.mockk.mockk
@@ -29,12 +30,15 @@ class LoginViewModelTest {
     private val validEmail = "rohit@email.com"
     private val validPassword = "Rohit@2020"
 
+    // replace all schedulers with trampoline (FIFO)
+    private val testSchedulers = TestRxSchedulersProvider()
+
     @Before
     fun beforeTest() {
         mockRepo = mockk()
         every { mockRepo.isValidEmailId(validEmail) } returns true
 
-        vm = LoginViewModel(mockRepo)
+        vm = LoginViewModel(repo = mockRepo, schedulers = testSchedulers, debounceTimeMillis = 1L)
         vm.submitEvent(LoginEvent.ScreenLoadEvent)
     }
 

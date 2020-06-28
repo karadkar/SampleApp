@@ -6,6 +6,8 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import io.github.karadkar.sample.login.LoginViewModel
 import io.github.karadkar.sample.login.repository.LoginApiService
 import io.github.karadkar.sample.login.repository.LoginRepository
+import io.github.karadkar.sample.utils.AppRxSchedulers
+import io.github.karadkar.sample.utils.AppRxSchedulersProvider
 import io.github.karadkar.sample.utils.SampleConstants
 import org.koin.android.viewmodel.dsl.viewModel
 import org.koin.dsl.module
@@ -39,10 +41,14 @@ val koinAppModules = module {
     }
 
     single<LoginRepository> {
-        return@single LoginRepository(apiService = get(), objectMapper = get())
+        return@single LoginRepository(apiService = get(), objectMapper = get(), schedulers = get())
+    }
+
+    single<AppRxSchedulers> {
+        return@single AppRxSchedulersProvider()
     }
 
     viewModel {
-        LoginViewModel(repo = get())
+        LoginViewModel(repo = get(), schedulers = get())
     }
 }
