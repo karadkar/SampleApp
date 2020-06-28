@@ -14,6 +14,7 @@ import io.github.karadkar.sample.databinding.FragDashboardBinding
 import io.github.karadkar.sample.utils.Lce
 import io.github.karadkar.sample.utils.logError
 import io.github.karadkar.sample.utils.logInfo
+import io.github.karadkar.sample.utils.visibleOrGone
 import kotlinx.android.synthetic.main.frag_dashboard.*
 import org.koin.android.viewmodel.ext.android.viewModel
 
@@ -42,7 +43,7 @@ class DashBoardFragment : Fragment() {
         rvDashboard.adapter = adapter
 
         viewModel.getListItems().observe(this, Observer { data ->
-            binding.swipeRefreshLayout.isRefreshing = data is Lce.Loading
+            binding.progressBar.visibleOrGone(data is Lce.Loading)
             when (data) {
                 is Lce.Content -> {
                     logInfo("submitted ${data.content.size} items")

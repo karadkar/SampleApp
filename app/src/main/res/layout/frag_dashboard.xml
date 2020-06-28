@@ -25,6 +25,14 @@
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 android:clipToPadding="false"
                 android:paddingBottom="16dp" />
+
+            <ProgressBar
+                android:id="@+id/progress_bar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                android:indeterminate="true"
+                android:layout_gravity="bottom" />
         </FrameLayout>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 

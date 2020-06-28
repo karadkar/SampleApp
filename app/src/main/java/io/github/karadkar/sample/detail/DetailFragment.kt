@@ -30,6 +30,7 @@ class DetailFragment : Fragment(), View.OnClickListener {
 
             webView.loadUrl(pageUrl)
             webView.settings.javaScriptEnabled = true
+            // todo: add webview progress bar
         }
         return binding.root
     }
