@@ -46,7 +46,9 @@ class DashBoardFragment : Fragment() {
             when (data) {
                 is Lce.Content -> {
                     logInfo("submitted ${data.content.size} items")
-                    adapter.submitList(data.content)
+                    if (data.content.isNotEmpty()) {
+                        adapter.submitList(data.content)
+                    }
                 }
                 is Lce.Error -> {
                     Toast.makeText(requireContext(), "error fetching data", Toast.LENGTH_SHORT).show()

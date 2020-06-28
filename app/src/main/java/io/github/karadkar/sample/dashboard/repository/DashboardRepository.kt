@@ -14,12 +14,14 @@ class DashboardRepository(
     private val chunkSize = 20
 
     private val stories = LinkedHashMap<Int, DashboardListItem>(100)
-    private val storyIds = HashSet<Int>(100)
 
     fun fetchNext(): Observable<List<DashboardListItem>> {
+        val downloadableSize = topStoriesIds.size - stories.size
+        if (downloadableSize == 0) return Observable.just(emptyList())
+
         return Observable.fromIterable(topStoriesIds)
             .filter { id -> !stories.contains(id) }
-            .buffer(topStoriesIds.size - stories.size)
+            .buffer(downloadableSize)
             .doOnNext { logInfo("found ${it.size} downloadable ids") }
             .map { totalIds ->
                 return@map totalIds.subList(0, chunkSize)
