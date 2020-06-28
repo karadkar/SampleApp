@@ -31,6 +31,9 @@ class DashBoardFragment : Fragment() {
         adapter = DashboardListAdapter(context = requireContext()) { item ->
             // on click item
             logInfo("dash item clicked $item")
+            if (activity is DashboardListContract) {
+                (activity as DashboardListContract).onClickDashboardNewItem(item)
+            }
         }
         rvDashboard.adapter = adapter
 
