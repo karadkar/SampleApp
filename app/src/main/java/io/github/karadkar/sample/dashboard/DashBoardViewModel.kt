@@ -5,10 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import io.github.karadkar.sample.dashboard.models.DashboardListItem
 import io.github.karadkar.sample.dashboard.repository.DashboardRepository
-import io.github.karadkar.sample.utils.AppRxSchedulers
-import io.github.karadkar.sample.utils.addTo
-import io.github.karadkar.sample.utils.logError
-import io.github.karadkar.sample.utils.logInfo
+import io.github.karadkar.sample.utils.*
 import io.reactivex.disposables.CompositeDisposable
 
 class DashBoardViewModel(
@@ -16,26 +13,43 @@ class DashBoardViewModel(
     private val schedulers: AppRxSchedulers
 ) : ViewModel() {
 
-    private val stories = MutableLiveData<List<DashboardListItem>>()
+    private val stories = MutableLiveData<Lce<List<DashboardListItem>>>()
     private val disposable = CompositeDisposable()
 
     init {
 
-        repository.fetchAtBeginning()
+        repository.fetchTopStoryIds()
+            .switchMap {
+                repository.fetchNext()
+            }
+            .doOnSubscribe {
+                stories.value = Lce.Loading()
+            }
             .subscribe({ stories ->
                 logInfo("Top Stories: $stories")
-                this.stories.value = stories
+                this.stories.value = Lce.Content(stories)
             }, { t ->
                 logError("error fetching top stories", t)
+                this.stories.value = Lce.Error(t)
             }).addTo(disposable)
 
     }
 
-    private fun fetchTopStories() {
-
+    fun fetchNext() {
+        repository.fetchNext()
+            .doOnSubscribe {
+                stories.value = Lce.Loading()
+            }
+            .subscribe({ stories ->
+                logInfo("Top Stories: $stories")
+                this.stories.value = Lce.Content(stories)
+            }, { t ->
+                logError("error fetching top stories", t)
+                this.stories.value = Lce.Error(t)
+            }).addTo(disposable)
     }
 
-    fun getListItems(): LiveData<List<DashboardListItem>> = stories
+    fun getListItems(): LiveData<Lce<List<DashboardListItem>>> = stories
 
     override fun onCleared() {
         disposable.dispose()

@@ -4,11 +4,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import io.github.karadkar.sample.R
 import io.github.karadkar.sample.databinding.FragDashboardBinding
+import io.github.karadkar.sample.utils.Lce
+import io.github.karadkar.sample.utils.logError
 import io.github.karadkar.sample.utils.logInfo
 import kotlinx.android.synthetic.main.frag_dashboard.*
 import org.koin.android.viewmodel.ext.android.viewModel
@@ -37,8 +40,22 @@ class DashBoardFragment : Fragment() {
         }
         rvDashboard.adapter = adapter
 
-        viewModel.getListItems().observe(this, Observer { items ->
-            adapter.submitList(items)
+        viewModel.getListItems().observe(this, Observer { data ->
+            binding.swipeRefreshLayout.isRefreshing = data is Lce.Loading
+            when (data) {
+                is Lce.Content -> {
+                    adapter.submitList(data.content)
+                }
+                is Lce.Error -> {
+                    Toast.makeText(requireContext(), "error fetching data", Toast.LENGTH_SHORT).show()
+                    logError("error fetching stories", data.t)
+                }
+            }
         })
+
+        binding.swipeRefreshLayout.setOnRefreshListener {
+            Toast.makeText(requireContext(), "Not Implemented", Toast.LENGTH_SHORT).show()
+            binding.swipeRefreshLayout.isRefreshing = false
+        }
     }
 }
