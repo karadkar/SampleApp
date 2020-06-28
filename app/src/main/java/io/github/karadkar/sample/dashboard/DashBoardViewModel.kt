@@ -16,31 +16,26 @@ class DashBoardViewModel(
     private val schedulers: AppRxSchedulers
 ) : ViewModel() {
 
-    private val listItems = MutableLiveData<List<DashboardListItem>>()
+    private val stories = MutableLiveData<List<DashboardListItem>>()
     private val disposable = CompositeDisposable()
 
     init {
-        val dummyList = mutableListOf<DashboardListItem>()
-        for (i in 1..100) {
-            dummyList.add(
-                DashboardListItem(id = i, title = "some list item $i", link = "https://www.google.com/")
-            )
-        }
-        listItems.value = dummyList
 
-        fetchTopStories()
-    }
-
-    private fun fetchTopStories() {
-        repository.fetchTopStories()
+        repository.fetchAtBeginning()
             .subscribe({ stories ->
                 logInfo("Top Stories: $stories")
+                this.stories.value = stories
             }, { t ->
                 logError("error fetching top stories", t)
             }).addTo(disposable)
+
     }
 
-    fun getListItems(): LiveData<List<DashboardListItem>> = listItems
+    private fun fetchTopStories() {
+
+    }
+
+    fun getListItems(): LiveData<List<DashboardListItem>> = stories
 
     override fun onCleared() {
         disposable.dispose()
