@@ -57,7 +57,7 @@ class LoginFragment : Fragment(), View.OnClickListener, CompoundButton.OnChecked
         viewMode.submitEvent(LoginEvent.ScreenLoadEvent)
     }
     private fun renderViewState() {
-        viewMode.viewState.observe(requireActivity(), Observer { state ->
+        viewMode.viewState.observe(this, Observer { state ->
             if (state != null) {
                 binding.apply {
                     btnLogin.isEnabled = state.enableLoginButton() && !state.loading
@@ -88,7 +88,7 @@ class LoginFragment : Fragment(), View.OnClickListener, CompoundButton.OnChecked
     }
 
     private fun triggerViewEffects() {
-        viewMode.viewEffect.observe(requireActivity(), Observer { effect ->
+        viewMode.viewEffect.observe(this, Observer { effect ->
             if (effect != null) {
                 when (effect) {
                     is LoginUiEffects.LoginError -> {

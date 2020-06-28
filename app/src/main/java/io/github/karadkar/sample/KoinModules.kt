@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
+import io.github.karadkar.sample.dashboard.DashBoardViewModel
 import io.github.karadkar.sample.login.LoginViewModel
 import io.github.karadkar.sample.login.repository.LoginApiService
 import io.github.karadkar.sample.login.repository.LoginRepository
@@ -57,5 +58,9 @@ val koinAppModules = module {
 
     viewModel {
         LoginViewModel(repo = get(), schedulers = get())
+    }
+
+    viewModel {
+        DashBoardViewModel()
     }
 }
