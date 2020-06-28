@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.RecyclerView
 import io.github.karadkar.sample.R
 import io.github.karadkar.sample.databinding.FragDashboardBinding
 import io.github.karadkar.sample.utils.Lce
@@ -44,6 +45,7 @@ class DashBoardFragment : Fragment() {
             binding.swipeRefreshLayout.isRefreshing = data is Lce.Loading
             when (data) {
                 is Lce.Content -> {
+                    logInfo("submitted ${data.content.size} items")
                     adapter.submitList(data.content)
                 }
                 is Lce.Error -> {
@@ -57,5 +59,15 @@ class DashBoardFragment : Fragment() {
             Toast.makeText(requireContext(), "Not Implemented", Toast.LENGTH_SHORT).show()
             binding.swipeRefreshLayout.isRefreshing = false
         }
+
+        binding.rvDashboard.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+                if (newState == RecyclerView.SCROLL_STATE_IDLE && !recyclerView.canScrollVertically(1)) {
+                    viewModel.fetchNext()
+                    logInfo("end reached")
+                }
+            }
+        })
     }
 }

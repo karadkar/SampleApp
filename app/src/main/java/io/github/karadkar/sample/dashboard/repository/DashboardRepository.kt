@@ -13,28 +13,36 @@ class DashboardRepository(
     private var topStoriesIds: List<Int> = emptyList()
     private val chunkSize = 20
 
-    private val stories = ArrayList<DashboardListItem>(100)
+    private val stories = LinkedHashMap<Int, DashboardListItem>(100)
     private val storyIds = HashSet<Int>(100)
 
-    fun fetchNext(): Observable<ArrayList<DashboardListItem>> {
+    fun fetchNext(): Observable<List<DashboardListItem>> {
         return Observable.fromIterable(topStoriesIds)
-            .filter { id -> !storyIds.contains(id) }
-            .buffer(topStoriesIds.size - storyIds.size)
-            .doOnNext { logInfo("found ${it.size} downloadable ids: $it") }
+            .filter { id -> !stories.contains(id) }
+            .buffer(topStoriesIds.size - stories.size)
+            .doOnNext { logInfo("found ${it.size} downloadable ids") }
             .map { totalIds ->
                 return@map totalIds.subList(0, chunkSize)
             }
-            .doOnNext { logInfo("fetching ${it.size} stories: $it") }
+            .doOnNext { logInfo("fetching ${it.size} stories") }
             .switchMap { ids ->
                 fetchStories(ids)
-            }.subscribeOn(schedulers.io())
-            .observeOn(schedulers.main())
+            }
             .map { fetchedStories ->
                 // always return stored data
-                stories.addAll(fetchedStories)
-                storyIds.addAll(fetchedStories.map { it.id })
-                return@map stories
+                for (story in fetchedStories) {
+                    stories[story.id] = story
+                }
+
+                // to retain the order
+                val result = ArrayList<DashboardListItem>(stories.size)
+                for (key in stories.keys) {
+                    result.add(stories[key]!!)
+                }
+                return@map result as List<DashboardListItem>
             }
+            .subscribeOn(schedulers.io())
+            .observeOn(schedulers.main())
     }
 
     private fun fetchStories(ids: List<Int>): Observable<List<DashboardListItem>> {
