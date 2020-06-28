@@ -68,6 +68,7 @@ class LoginFragment : Fragment(), View.OnClickListener, CompoundButton.OnChecked
                     progressBar.visibleOrGone(state.loading)
 
                     switchTheme.isChecked = state.enableDarkTheme
+                    enableDarkMode(state.enableDarkTheme) // for the fist load
 
                     if (state.userNameError != null) {
                         tiUserName.error = getString(state.userNameError)
@@ -95,9 +96,6 @@ class LoginFragment : Fragment(), View.OnClickListener, CompoundButton.OnChecked
                     }
                     is LoginUiEffects.LoginSuccess -> {
                         Toast.makeText(requireContext(), "Login success", Toast.LENGTH_SHORT).show()
-                    }
-                    is LoginUiEffects.EnableDarkTheme -> {
-                        enableDarkMode(effect.enable)
                     }
                 }
             }

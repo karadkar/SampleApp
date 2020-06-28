@@ -4,7 +4,6 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.google.common.truth.Truth.assertThat
 import io.github.karadkar.sample.R
 import io.github.karadkar.sample.login.models.LoginEvent
-import io.github.karadkar.sample.login.models.LoginUiEffects
 import io.github.karadkar.sample.login.repository.LoginRepository
 import io.github.karadkar.sample.login.repository.LoginResponse
 import io.github.karadkar.sample.utils.TestRxSchedulersProvider
@@ -58,10 +57,6 @@ class LoginViewModelTest {
 
         vm.viewState.getOrAwaitValue().apply {
             assertThat(enableDarkTheme).isTrue()
-        }
-
-        vm.viewEffect.getOrAwaitValue().apply {
-            assertThat(this is LoginUiEffects.EnableDarkTheme).isTrue()
         }
     }
 

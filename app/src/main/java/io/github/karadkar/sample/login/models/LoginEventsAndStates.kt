@@ -41,5 +41,4 @@ data class LoginUiState(
 sealed class LoginUiEffects {
     object LoginSuccess : LoginUiEffects()
     data class LoginError(val message: String) : LoginUiEffects()
-    data class EnableDarkTheme(val enable: Boolean) : LoginUiEffects()
 }

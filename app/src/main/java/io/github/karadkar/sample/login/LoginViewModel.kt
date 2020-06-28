@@ -79,11 +79,9 @@ class LoginViewModel(
 
     private fun Observable<LoginEventResult>.resultToViewState(): Observable<LoginUiState> {
         // gives previousUiState and new Result
-        return this.scan(LoginUiState()) { state, result ->
+        return this.scan(LoginUiState(enableDarkTheme = repo.isDarkModeEnabled())) { state, result ->
             return@scan when (result) {
-                is LoginEventResult.ScreenLoadResult -> state.copy(
-                    enableDarkTheme = repo.isDarkModeEnabled()
-                )
+                is LoginEventResult.ScreenLoadResult -> state
                 is LoginEventResult.EnableDarkThemeResult -> {
                     state.copy(enableDarkTheme = result.enable)
                 }
@@ -194,12 +192,11 @@ class LoginViewModel(
     }
 
     private fun Observable<LoginEventResult>.resultToViewEffect(): Observable<LoginUiEffects> {
-        return this.filter { it is LoginEventResult.ApiError || it is LoginEventResult.ApiSuccess || it is LoginEventResult.EnableDarkThemeResult }
+        return this.filter { it is LoginEventResult.ApiError || it is LoginEventResult.ApiSuccess }
             .map { result ->
                 return@map when (result) {
                     is LoginEventResult.ApiError -> LoginUiEffects.LoginError(result.message)
                     is LoginEventResult.ApiSuccess -> LoginUiEffects.LoginSuccess
-                    is LoginEventResult.EnableDarkThemeResult -> LoginUiEffects.EnableDarkTheme(result.enable)
                     else -> error("result$result not handled for view-effect")
                 }
             }.distinctUntilChanged()
