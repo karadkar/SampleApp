@@ -96,6 +96,9 @@ class LoginFragment : Fragment(), View.OnClickListener, CompoundButton.OnChecked
                     }
                     is LoginUiEffects.LoginSuccess -> {
                         Toast.makeText(requireContext(), "Login success", Toast.LENGTH_SHORT).show()
+                        if (activity is LoginContract) {
+                            (activity as LoginContract).onLoginSuccessful()
+                        }
                     }
                 }
             }

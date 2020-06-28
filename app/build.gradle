@@ -35,6 +35,7 @@ dependencies {
 
     implementation Libraries.constraintLayout
     implementation Libraries.materialComponents
+    implementation Libraries.swipeRefreashLayout
 
     testImplementation Libraries.junit
     testImplementation Libraries.truthAssersions
