@@ -16,12 +16,6 @@ class SampleActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_sample)
 
-//        viewModel.nightModeValue().observe(this, Observer { value ->
-//            if (value != null) {
-//                delegate.localNightMode = value
-//            }
-//        })
-
         supportFragmentManager.beginTransaction()
             .add(R.id.fragment_container, LoginFragment())
             .commit()

@@ -1,6 +1,5 @@
 package io.github.karadkar.sample.login
 
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import io.github.karadkar.sample.R
@@ -25,25 +24,37 @@ class LoginViewModel(
 
     private val viewEventEmitter = PublishSubject.create<LoginEvent>()
 
+    // todo: only expose LiveData to View instead of MutableLiveData
     // persistable ui state
     val viewState = MutableLiveData<LoginUiState>()
 
     // on-shot ui state
     val viewEffect = SingleLiveEvent<LoginUiEffects>()
+    // this needs to be observed once but in Activity and Fragment. so using observable instead of SingleLiveEvent
+    //val viewEffect: Observable<LoginUiEffects>
 
     init {
         viewEventEmitter
             .doOnNext { logInfo("event $it") }
-            .share().also { event ->
-                event.eventToResult()
-                    .doOnNext { logInfo("result $it") }
-                    .resultToViewState()
+            .eventToResult()
+            .doOnNext { logInfo("result $it") }
+            .share().also { result ->
+
+                result.resultToViewState()
                     .doOnNext { logInfo("state $it") }
                     .observeOn(schedulers.main())
                     .subscribe({
                         viewState.value = it
                     }, {
-                        logError("error processing event $event", t = it)
+                        logError("error processing$result", t = it)
+                    }).addTo(disposable)
+
+                result.resultToViewEffect()
+                    .doOnNext { logInfo("effect $it") }
+                    .subscribe({
+                        viewEffect.value = it
+                    }, {
+                        logError("error processing $result", t = it)
                     }).addTo(disposable)
             }
     }
@@ -55,6 +66,7 @@ class LoginViewModel(
                     return@map LoginEventResult.ScreenLoadResult
                 },
                 obj.ofType(LoginEvent.EnableDarkThemeEvent::class.java).map {
+                    repo.toggleDarkMode(it.enable)
                     return@map LoginEventResult.EnableDarkThemeResult(enable = it.enable)
                 },
                 obj.ofType(LoginEvent.UserNameValidationCheckEvent::class.java).userNameValidationEventToResult(),
@@ -69,7 +81,9 @@ class LoginViewModel(
         // gives previousUiState and new Result
         return this.scan(LoginUiState()) { state, result ->
             return@scan when (result) {
-                is LoginEventResult.ScreenLoadResult -> state.copy()
+                is LoginEventResult.ScreenLoadResult -> state.copy(
+                    enableDarkTheme = repo.isDarkModeEnabled()
+                )
                 is LoginEventResult.EnableDarkThemeResult -> {
                     state.copy(enableDarkTheme = result.enable)
                 }
@@ -116,7 +130,8 @@ class LoginViewModel(
     }
 
     private fun Observable<LoginEvent.UserNameValidationCheckEvent>.userNameValidationEventToResult(): Observable<LoginEventResult> {
-        return this.debounce(debounceTimeMillis, TimeUnit.MILLISECONDS, schedulers.computation()).map { event ->
+        return this.filter { it.username.isNotEmpty() }
+            .debounce(debounceTimeMillis, TimeUnit.MILLISECONDS, schedulers.computation()).map { event ->
             return@map if (!repo.isValidEmailId(event.username)) {
                 LoginEventResult.EmailValidationError(R.string.error_invalid_email)
             } else {
@@ -126,7 +141,8 @@ class LoginViewModel(
     }
 
     private fun Observable<LoginEvent.PasswordValidationCheckEvent>.passwordValidationEventToResult(): Observable<LoginEventResult> {
-        return this.debounce(debounceTimeMillis, TimeUnit.MILLISECONDS, schedulers.computation()).map { event ->
+        return this.filter { it.password.isNotEmpty() }
+            .debounce(debounceTimeMillis, TimeUnit.MILLISECONDS, schedulers.computation()).map { event ->
             val error = checkForPasswordValidation(event)
             if (error != null) {
                 return@map error
@@ -177,16 +193,19 @@ class LoginViewModel(
         viewEventEmitter.onNext(event)
     }
 
-    fun setNightMode(yes: Boolean) = repo.setNightMode(yes)
+    private fun Observable<LoginEventResult>.resultToViewEffect(): Observable<LoginUiEffects> {
+        return this.filter { it is LoginEventResult.ApiError || it is LoginEventResult.ApiSuccess || it is LoginEventResult.EnableDarkThemeResult }
+            .map { result ->
+                return@map when (result) {
+                    is LoginEventResult.ApiError -> LoginUiEffects.LoginError(result.message)
+                    is LoginEventResult.ApiSuccess -> LoginUiEffects.LoginSuccess
+                    is LoginEventResult.EnableDarkThemeResult -> LoginUiEffects.EnableDarkTheme(result.enable)
+                    else -> error("result$result not handled for view-effect")
+                }
+            }.distinctUntilChanged()
+    }
 
-    fun isNightMode(): LiveData<Boolean> = repo.isNightMode()
-
-    fun login() {
-        repo.login(userName = "test@worldofplay.in", password = "Worldofplay@2020")
-            .subscribe({
-                logError("api call success")
-            }, {
-                logError("login error", it)
-            }).addTo(disposable)
+    override fun onCleared() {
+        disposable.dispose()
     }
 }

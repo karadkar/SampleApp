@@ -5,6 +5,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CompoundButton
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.widget.addTextChangedListener
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -12,6 +15,7 @@ import androidx.lifecycle.Observer
 import io.github.karadkar.sample.R
 import io.github.karadkar.sample.databinding.FragLoginBinding
 import io.github.karadkar.sample.login.models.LoginEvent
+import io.github.karadkar.sample.login.models.LoginUiEffects
 import io.github.karadkar.sample.utils.visibleOrGone
 import org.koin.android.viewmodel.ext.android.sharedViewModel
 
@@ -30,11 +34,14 @@ class LoginFragment : Fragment(), View.OnClickListener, CompoundButton.OnChecked
     // fixme: retain edit-text values when dark theme is applied
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+
         renderViewState()
+        triggerViewEffects()
+
         binding.apply {
-            // fixme: preserves checked state. as on applying dark theme, fragments are recreated
             btnLogin.setOnClickListener(this@LoginFragment)
             switchTheme.setOnCheckedChangeListener(this@LoginFragment)
+
             etUserName.addTextChangedListener(afterTextChanged = {
                 viewMode.submitEvent(
                     LoginEvent.UserNameValidationCheckEvent(username = it.toString())
@@ -56,8 +63,11 @@ class LoginFragment : Fragment(), View.OnClickListener, CompoundButton.OnChecked
                     btnLogin.isEnabled = state.enableLoginButton() && !state.loading
                     tiUserName.isEnabled = !state.loading
                     tiPassword.isEnabled = !state.loading
+                    switchTheme.isEnabled = !state.loading
 
                     progressBar.visibleOrGone(state.loading)
+
+                    switchTheme.isChecked = state.enableDarkTheme
 
                     if (state.userNameError != null) {
                         tiUserName.error = getString(state.userNameError)
@@ -74,6 +84,41 @@ class LoginFragment : Fragment(), View.OnClickListener, CompoundButton.OnChecked
                 }
             }
         })
+    }
+
+    private fun triggerViewEffects() {
+        viewMode.viewEffect.observe(requireActivity(), Observer { effect ->
+            if (effect != null) {
+                when (effect) {
+                    is LoginUiEffects.LoginError -> {
+                        Toast.makeText(requireContext(), effect.message, Toast.LENGTH_SHORT).show()
+                    }
+                    is LoginUiEffects.LoginSuccess -> {
+                        Toast.makeText(requireContext(), "Login success", Toast.LENGTH_SHORT).show()
+                    }
+                    is LoginUiEffects.EnableDarkTheme -> {
+                        enableDarkMode(effect.enable)
+                    }
+                }
+            }
+        })
+    }
+
+    private fun enableDarkMode(enable: Boolean) {
+        val modeValue = if (enable) {
+            AppCompatDelegate.MODE_NIGHT_YES
+        } else {
+            AppCompatDelegate.MODE_NIGHT_NO
+        }
+
+        val act = activity
+        if (act is AppCompatActivity?) {
+            act?.delegate?.let { delegate ->
+                if (delegate.localNightMode != modeValue) {
+                    delegate.localNightMode = modeValue
+                }
+            }
+        }
     }
 
     override fun onClick(v: View?) {

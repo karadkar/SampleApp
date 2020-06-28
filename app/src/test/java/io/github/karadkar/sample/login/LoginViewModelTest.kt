@@ -4,6 +4,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.google.common.truth.Truth.assertThat
 import io.github.karadkar.sample.R
 import io.github.karadkar.sample.login.models.LoginEvent
+import io.github.karadkar.sample.login.models.LoginUiEffects
 import io.github.karadkar.sample.login.repository.LoginRepository
 import io.github.karadkar.sample.login.repository.LoginResponse
 import io.github.karadkar.sample.utils.TestRxSchedulersProvider
@@ -11,6 +12,7 @@ import io.github.karadkar.sample.utils.getOrAwaitValue
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.unmockkAll
+import io.mockk.verify
 import io.reactivex.Single
 import org.junit.After
 import org.junit.Before
@@ -37,6 +39,8 @@ class LoginViewModelTest {
     fun beforeTest() {
         mockRepo = mockk()
         every { mockRepo.isValidEmailId(validEmail) } returns true
+        every { mockRepo.isDarkModeEnabled() } returns false
+        every { mockRepo.toggleDarkMode(any()) } returns Unit
 
         vm = LoginViewModel(repo = mockRepo, schedulers = testSchedulers, debounceTimeMillis = 1L)
         vm.submitEvent(LoginEvent.ScreenLoadEvent)
@@ -47,6 +51,19 @@ class LoginViewModelTest {
         unmockkAll()
     }
 
+    @Test
+    fun `dark theme toggle`() {
+        vm.submitEvent(LoginEvent.EnableDarkThemeEvent(enable = true))
+        verify { mockRepo.toggleDarkMode(enable = true) }
+
+        vm.viewState.getOrAwaitValue().apply {
+            assertThat(enableDarkTheme).isTrue()
+        }
+
+        vm.viewEffect.getOrAwaitValue().apply {
+            assertThat(this is LoginUiEffects.EnableDarkTheme).isTrue()
+        }
+    }
 
     @Test
     fun `basic view state on screen-load`() {

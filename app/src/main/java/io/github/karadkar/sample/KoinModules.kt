@@ -1,5 +1,7 @@
 package io.github.karadkar.sample
 
+import android.content.Context
+import android.content.SharedPreferences
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -9,6 +11,7 @@ import io.github.karadkar.sample.login.repository.LoginRepository
 import io.github.karadkar.sample.utils.AppRxSchedulers
 import io.github.karadkar.sample.utils.AppRxSchedulersProvider
 import io.github.karadkar.sample.utils.SampleConstants
+import org.koin.android.ext.koin.androidApplication
 import org.koin.android.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 import retrofit2.Retrofit
@@ -40,8 +43,12 @@ val koinAppModules = module {
         return@single retrofit.create(LoginApiService::class.java)
     }
 
+    single<SharedPreferences> {
+        androidApplication().getSharedPreferences(SampleConstants.PrefKeys.PREFERENCE_NAME, Context.MODE_PRIVATE)
+    }
+
     single<LoginRepository> {
-        return@single LoginRepository(apiService = get(), objectMapper = get(), schedulers = get())
+        return@single LoginRepository(apiService = get(), schedulers = get(), sharedPreferences = get())
     }
 
     single<AppRxSchedulers> {
