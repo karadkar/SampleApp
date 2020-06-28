@@ -1,9 +1,12 @@
 package io.github.karadkar.sample.detail
 
+import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Patterns
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import io.github.karadkar.sample.R
@@ -14,6 +17,8 @@ class DetailFragment : Fragment(), View.OnClickListener {
 
     private lateinit var pageTitle: String
     private lateinit var pageUrl: String
+
+    @SuppressLint("SetJavaScriptEnabled")
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = DataBindingUtil.inflate(layoutInflater, R.layout.frag_detail, container, false)
 
@@ -24,6 +29,12 @@ class DetailFragment : Fragment(), View.OnClickListener {
         binding.apply {
             tvTitle.text = pageTitle
             btnBack.setOnClickListener(this@DetailFragment)
+            if (Patterns.WEB_URL.matcher(pageUrl).matches()) {
+                webView.loadUrl(pageUrl)
+                webView.settings.javaScriptEnabled = true
+            } else {
+                Toast.makeText(requireContext(), "Invalid Url", Toast.LENGTH_SHORT).show()
+            }
         }
         return binding.root
     }
