@@ -4,6 +4,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.google.common.truth.Truth.assertThat
 import io.github.karadkar.sample.R
 import io.github.karadkar.sample.login.models.LoginEvent
+import io.github.karadkar.sample.login.models.LoginUiEffects
 import io.github.karadkar.sample.login.repository.LoginRepository
 import io.github.karadkar.sample.login.repository.LoginResponse
 import io.github.karadkar.sample.utils.TestRxSchedulersProvider
@@ -156,11 +157,8 @@ class LoginViewModelTest {
         vm.submitEvent(LoginEvent.UserNameValidationCheckEvent(username = validEmail))
         vm.submitEvent(LoginEvent.PasswordValidationCheckEvent(password = validPassword))
         vm.submitEvent(LoginEvent.OnClickLoginEvent(username = validEmail, password = validPassword))
-        vm.viewState.getOrAwaitValue().apply {
-            assertThat(userNameError).isNull()
-            assertThat(passwordError).isNull()
-            assertThat(enableLoginButton()).isTrue()
-            assertThat(loading).isFalse()
+        vm.viewEffect.getOrAwaitValue().apply {
+            assertThat(this).isInstanceOf(LoginUiEffects.LoginSuccess::class.java)
         }
 
         // todo: add test for visible progress-bar state
@@ -180,6 +178,10 @@ class LoginViewModelTest {
             assertThat(loginApiError).isNotEmpty()
             assertThat(enableLoginButton()).isTrue() // user should be able to re-try
             assertThat(loading).isFalse()
+        }
+
+        vm.viewEffect.getOrAwaitValue().apply {
+            assertThat(this).isInstanceOf(LoginUiEffects.LoginError::class.java)
         }
     }
 }

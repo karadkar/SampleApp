@@ -97,12 +97,7 @@ class LoginViewModel(
                         isPasswordValid = true
                     )
                 }
-                is LoginEventResult.ApiSuccess -> {
-                    state.copy(
-                        loginApiError = null,
-                        loading = false
-                    )
-                }
+                is LoginEventResult.ApiSuccess -> state
                 is LoginEventResult.PasswordValidationError -> {
                     state.copy(
                         passwordError = result.passwordError,
