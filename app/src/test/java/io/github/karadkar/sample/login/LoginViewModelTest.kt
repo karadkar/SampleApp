@@ -82,13 +82,13 @@ class LoginViewModelTest {
 
     @Test
     fun `password length needs to be between 8-16 char`() {
-        vm.submitEvent(LoginEvent.PasswordValidationCheckEvent(password = "rohit"))
+        vm.submitEvent(LoginEvent.PasswordValidationCheckEvent(password = "Ro@1"))
         vm.viewState.getOrAwaitValue().apply {
             assertThat(passwordError).isEqualTo(R.string.error_password_length)
             assertThat(isPasswordValid).isFalse()
         }
 
-        vm.submitEvent(LoginEvent.PasswordValidationCheckEvent(password = "rohit-karadkar-1239"))
+        vm.submitEvent(LoginEvent.PasswordValidationCheckEvent(password = "Rohit-Karadkar1234"))
         vm.viewState.getOrAwaitValue().apply {
             assertThat(passwordError).isEqualTo(R.string.error_password_length)
             assertThat(isPasswordValid).isFalse()
@@ -135,11 +135,14 @@ class LoginViewModelTest {
 
 
     @Test
-    fun `valid email and password`() {
+    fun `login api success with valid email and password`() {
         val apiResponse = LoginResponse.Success()
         apiResponse.token = "random-token"
 
         every { mockRepo.login(validEmail, validPassword) } returns Single.just(apiResponse)
+
+        vm.submitEvent(LoginEvent.UserNameValidationCheckEvent(username = validEmail))
+        vm.submitEvent(LoginEvent.PasswordValidationCheckEvent(password = validPassword))
         vm.submitEvent(LoginEvent.OnClickLoginEvent(username = validEmail, password = validPassword))
         vm.viewState.getOrAwaitValue().apply {
             assertThat(userNameError).isNull()
@@ -154,7 +157,11 @@ class LoginViewModelTest {
     @Test
     fun `login api error`() {
         every { mockRepo.login(validEmail, validPassword) } returns Single.error(TimeoutException())
+
+        vm.submitEvent(LoginEvent.UserNameValidationCheckEvent(username = validEmail))
+        vm.submitEvent(LoginEvent.PasswordValidationCheckEvent(password = validPassword))
         vm.submitEvent(LoginEvent.OnClickLoginEvent(username = validEmail, password = validPassword))
+
         vm.viewState.getOrAwaitValue().apply {
             assertThat(userNameError).isNull()
             assertThat(passwordError).isNull()
