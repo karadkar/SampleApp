@@ -12,6 +12,7 @@ import androidx.lifecycle.Observer
 import io.github.karadkar.sample.R
 import io.github.karadkar.sample.databinding.FragLoginBinding
 import io.github.karadkar.sample.login.models.LoginEvent
+import io.github.karadkar.sample.utils.visibleOrGone
 import org.koin.android.viewmodel.ext.android.sharedViewModel
 
 class LoginFragment : Fragment(), View.OnClickListener, CompoundButton.OnCheckedChangeListener {
@@ -52,7 +53,11 @@ class LoginFragment : Fragment(), View.OnClickListener, CompoundButton.OnChecked
         viewMode.viewState.observe(requireActivity(), Observer { state ->
             if (state != null) {
                 binding.apply {
-                    btnLogin.isEnabled = state.enableLoginButton()
+                    btnLogin.isEnabled = state.enableLoginButton() && !state.loading
+                    tiUserName.isEnabled = !state.loading
+                    tiPassword.isEnabled = !state.loading
+
+                    progressBar.visibleOrGone(state.loading)
 
                     if (state.userNameError != null) {
                         tiUserName.error = getString(state.userNameError)
