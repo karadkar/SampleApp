@@ -1,20 +1,21 @@
 package io.github.karadkar.sample.utils
 
-import android.view.View
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.disposables.Disposable
+import android.content.res.Resources
+import android.view.LayoutInflater
+import android.view.ViewGroup
+import androidx.databinding.DataBindingUtil
+import androidx.databinding.ViewDataBinding
 
-fun Disposable.addTo(disposable: CompositeDisposable) {
-    disposable.add(this)
+inline fun <reified T : ViewDataBinding> Int.createBinding(
+    layoutInflater: LayoutInflater,
+    parent: ViewGroup?,
+    attachToParent: Boolean = false
+): T {
+    return DataBindingUtil.inflate(layoutInflater, this, parent, attachToParent)
 }
 
-fun String.containsAtleastOne(matcher: (char: Char) -> Boolean): Boolean {
-    this.onEach { char: Char ->
-        if (matcher(char)) return true
-    }
-    return false
-}
+val Int.DpToPx: Int
+    get() = (this * Resources.getSystem().displayMetrics.density).toInt()
 
-fun View.visibleOrGone(visible: Boolean) {
-    this.visibility = if (visible) View.VISIBLE else View.GONE
-}
+val Int.PxToDp: Int
+    get() = (this / Resources.getSystem().displayMetrics.density).toInt()

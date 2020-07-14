@@ -5,7 +5,7 @@
     <style name="AppTheme" parent="BaseAppTheme" />
 
     <!--Base custom theme which will be shared between both light and dark theme variants-->
-    <style name="BaseAppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="BaseAppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
         <!--Material color attributes (light theme) -->
         <!--colorPrimary colors map to components and elements, such as app bars and buttons. -->
         <!--colorSecondary colors are most often used as accents on components, such as FABs and -->
