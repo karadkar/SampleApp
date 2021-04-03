@@ -3,11 +3,11 @@
  * check https://handstandsam.com/2018/02/11/kotlin-buildsrc-for-better-gradle-dependency-management/
  */
 object Versions {
-    const val gradlePlugin = "4.1.1"
+    const val gradlePlugin = "4.1.2"
     const val archExtensions = "2.1.0"
     const val roomDb = "2.2.3"
     const val realmDbGradlePlugin = "5.12.0"
-    const val kotlin = "1.4.10"
+    const val kotlin = "1.4.30"
     const val koinVersion = "2.1.6"
 }
 
